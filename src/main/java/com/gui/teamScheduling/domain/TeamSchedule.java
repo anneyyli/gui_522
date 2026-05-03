@@ -13,9 +13,5 @@ public class TeamSchedule {
     private WorkMode workMode;
     private String officeLocation;
 
-    public String getEmployeeId() {
-        return employeeId;
-    }
-
     public enum WorkMode { OFFICE, REMOTE, LEAVE }
 }
