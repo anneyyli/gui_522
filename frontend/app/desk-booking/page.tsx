@@ -108,6 +108,7 @@ function DeskBookingContent() {
   const handleConfirmBooking = async () => {
     if (!selectedDeskId || !user) return;
     setBooking(true);
+    setError(null);
     try {
       await deskBookingApi.createBooking({ deskId: selectedDeskId, employeeId: user.employeeId, date });
       const bookedLabel = desks.find(d => d.deskId === selectedDeskId)?.deskLabel ?? selectedDeskId;
@@ -117,6 +118,7 @@ function DeskBookingContent() {
       setRefresh((c) => c + 1);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Unable to create booking.");
+      setTimeout(() => setError(null), 5000);
     } finally {
       setBooking(false);
     }
@@ -250,10 +252,20 @@ function DeskBookingContent() {
             </div>
           )}
 
+          {error && (
+            <div role="alert" aria-live="assertive" className="flex items-center gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 shadow-sm">
+              <svg className="h-5 w-5 flex-shrink-0 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9.303 3.376c-.866 1.5.217 3.374 1.948 3.374H2.697c-1.73 0-2.813-1.874-1.948-3.374L10.051 3.378c.866-1.5 3.032-1.5 3.898 0L22.303 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+              </svg>
+              <p className="text-sm font-medium text-rose-800">{error}</p>
+              <button type="button" onClick={() => setError(null)} className="ml-auto text-rose-400 hover:text-rose-600">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+          )}
+
           {loading ? (
             <p className="text-center py-8 text-sm text-slate-500">Loading desks…</p>
-          ) : error ? (
-            <p role="alert" aria-live="assertive" className="text-center py-8 text-sm text-rose-600">{error}</p>
           ) : (
             <div className="grid gap-6 xl:grid-cols-[1.4fr_0.6fr]">
               <FloorPlan

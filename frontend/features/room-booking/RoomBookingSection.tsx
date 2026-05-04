@@ -35,6 +35,7 @@ export default function RoomBookingSection({ date, employeeId, onBooked, refresh
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [booking, setBooking] = useState(false);
   const [justBooked, setJustBooked] = useState<string | null>(null);
+  const [bookingError, setBookingError] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -57,7 +58,8 @@ export default function RoomBookingSection({ date, employeeId, onBooked, refresh
       setTimeout(() => setJustBooked(null), 2000);
       onBooked?.();
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "Failed to book room.");
+      setBookingError(err instanceof Error ? err.message : "Failed to book room.");
+      setTimeout(() => setBookingError(null), 5000);
     } finally {
       setBooking(false);
     }
@@ -75,6 +77,15 @@ export default function RoomBookingSection({ date, employeeId, onBooked, refresh
     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <h2 className="text-lg font-semibold text-slate-900">Meeting Rooms</h2>
       <p className="mt-0.5 text-sm text-slate-500">Book a room for the selected date</p>
+
+      {bookingError && (
+        <div role="alert" className="mt-3 flex items-center gap-3 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3">
+          <p className="text-sm font-medium text-rose-800">{bookingError}</p>
+          <button type="button" onClick={() => setBookingError(null)} className="ml-auto text-rose-400 hover:text-rose-600">
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+      )}
 
       <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {rooms.map((room) => {

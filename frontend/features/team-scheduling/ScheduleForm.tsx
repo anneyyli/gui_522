@@ -17,15 +17,18 @@ export default function ScheduleForm({ onScheduleSet }: Props) {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [workMode, setWorkMode] = useState<"OFFICE" | "REMOTE" | "LEAVE">("OFFICE");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setError(null);
     try {
       await teamSchedulingApi.setSchedule({ employeeId, date, workMode });
       onScheduleSet();
     } catch (err: any) {
-      alert(err.message);
+      setError(err?.message ?? "Failed to save schedule.");
+      setTimeout(() => setError(null), 5000);
     } finally {
       setSubmitting(false);
     }
@@ -34,6 +37,15 @@ export default function ScheduleForm({ onScheduleSet }: Props) {
   return (
     <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-xl p-5 space-y-4">
       <h3 className="font-semibold text-gray-800">Set Work Mode</h3>
+
+      {error && (
+        <div role="alert" className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2">
+          <p className="text-sm text-rose-800">{error}</p>
+          <button type="button" onClick={() => setError(null)} className="ml-auto text-rose-400 hover:text-rose-600">
+            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+      )}
 
       <div className="space-y-1">
         <label className="text-xs font-medium text-gray-600">Employee</label>

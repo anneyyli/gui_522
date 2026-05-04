@@ -37,15 +37,19 @@ export default function DeskAvailabilityGrid({ date, employeeId, refresh = 0, on
     onAvailabilityChange?.(updated.filter((d) => !d.available).length, updated.length);
   };
 
+  const [bookingError, setBookingError] = useState<string | null>(null);
+
   const handleBook = async (deskId: string) => {
     setBooking(deskId);
+    setBookingError(null);
     try {
       await deskBookingApi.createBooking({ deskId, employeeId, date });
       onBookingCreated();
       const updated = await deskBookingApi.getAvailability(date);
       updateAvailability(updated);
     } catch (e: any) {
-      alert(e.message);
+      setBookingError(e?.message ?? "Unable to create booking.");
+      setTimeout(() => setBookingError(null), 5000);
     } finally {
       setBooking(null);
     }
@@ -58,6 +62,14 @@ export default function DeskAvailabilityGrid({ date, employeeId, refresh = 0, on
 
   return (
     <div className="space-y-6">
+      {bookingError && (
+        <div role="alert" className="flex items-center gap-3 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3">
+          <p className="text-sm font-medium text-rose-800">{bookingError}</p>
+          <button type="button" onClick={() => setBookingError(null)} className="ml-auto text-rose-400 hover:text-rose-600">
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+      )}
       {floors.map((floor) => (
         <div key={floor}>
           <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
