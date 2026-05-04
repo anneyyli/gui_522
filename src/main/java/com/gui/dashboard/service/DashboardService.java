@@ -11,6 +11,9 @@ import com.gui.dashboard.dto.DashboardResponse;
 import com.gui.dashboard.dto.WeeklyScheduleRowResponse;
 import com.gui.deskBooking.domain.DeskBooking;
 import com.gui.deskBooking.repository.DeskBookingRepository;
+import com.gui.integrations.office.client.OfficeIntegrationClient;
+import com.gui.roomBooking.repository.RoomBookingRepository;
+import com.gui.roomBooking.repository.RoomRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,9 +21,16 @@ public class DashboardService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final DeskBookingRepository bookingRepository;
+    private final OfficeIntegrationClient officeClient;
+    private final RoomRepository roomRepository;
+    private final RoomBookingRepository roomBookingRepository;
 
-    public DashboardService(DeskBookingRepository bookingRepository) {
+    public DashboardService(DeskBookingRepository bookingRepository, OfficeIntegrationClient officeClient,
+                            RoomRepository roomRepository, RoomBookingRepository roomBookingRepository) {
         this.bookingRepository = bookingRepository;
+        this.officeClient = officeClient;
+        this.roomRepository = roomRepository;
+        this.roomBookingRepository = roomBookingRepository;
     }
 
     public DashboardResponse getDashboard(String employeeId) {
@@ -34,10 +44,16 @@ public class DashboardService {
         int occupiedDesks = (int) todaysBookings.stream()
             .filter(b -> b.getStatus() == DeskBooking.BookingStatus.CONFIRMED)
             .count();
+        int totalDesks = officeClient.getAllDesks().size();
         response.setOccupiedDesks(occupiedDesks);
-        response.setTotalDesks(50); // Assuming fixed total
-        response.setOccupiedRooms(4); // Mock
-        response.setTotalRooms(6); // Mock
+        response.setTotalDesks(totalDesks);
+        int totalRooms = roomRepository.findAll().size();
+        int roomsWithBookings = (int) roomBookingRepository.findByDate(today).stream()
+                .map(b -> b.getRoomId())
+                .distinct()
+                .count();
+        response.setOccupiedRooms(roomsWithBookings);
+        response.setTotalRooms(totalRooms);
         response.setSite("Birmingham");
         response.setFloor("Floor 4 - Engineering");
 

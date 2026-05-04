@@ -41,6 +41,8 @@ interface DashboardData {
   };
 }
 
+const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+
 export default function HomePage() {
   const router = useRouter();
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
@@ -80,7 +82,6 @@ export default function HomePage() {
         setDashboardData(response);
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
-        // Fallback to mock data
         setDashboardData({
           occupiedDesks: 42,
           totalDesks: 50,
@@ -115,11 +116,21 @@ export default function HomePage() {
   }, [user]);
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20">Loading dashboard...</div>;
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="flex items-center gap-3 text-sm text-slate-500">
+          <svg className="h-5 w-5 animate-spin text-teal-600" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+          Loading dashboard...
+        </div>
+      </div>
+    );
   }
 
   if (!dashboardData || !user) {
-    return <div className="flex items-center justify-center py-20">Failed to load dashboard</div>;
+    return <div className="flex items-center justify-center py-20 text-sm text-slate-500">Failed to load dashboard</div>;
   }
 
   const isManager = user.role === "MANAGER";
@@ -132,22 +143,27 @@ export default function HomePage() {
     : { title: "My Planner", subtitle: "Your status, teammate availability, and desk options at a glance." };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <p className="text-sm font-medium text-teal-700">Hybrid Workforce Planner</p>
-          <h1 className="text-3xl font-semibold text-slate-900">{roleHeading.title}</h1>
-          <p className="mt-1 max-w-2xl text-sm text-slate-600">
+          <h1 className="text-3xl font-bold text-slate-900">{roleHeading.title}</h1>
+          <p className="mt-1 max-w-xl text-sm text-slate-500">
             {roleHeading.subtitle}
           </p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
-          <div className="font-medium text-slate-900">{dashboardData.site}</div>
-          <div>{dashboardData.floor}</div>
+        <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm">
+          <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+          </svg>
+          <span className="font-medium text-slate-700">{dashboardData.site}</span>
+          <span className="text-slate-300">|</span>
+          <span className="text-slate-500">{dashboardData.floor}</span>
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+      <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
         <OccupancySummary
           occupied={dashboardData.occupiedDesks}
           total={dashboardData.totalDesks}
@@ -174,49 +190,39 @@ export default function HomePage() {
       )}
 
       {isHR && dashboardData?.hrAttendanceSummary && (
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="mb-4">
-            <h2 className="text-lg font-semibold text-slate-900">Company Attendance Summary</h2>
-            <p className="text-sm text-slate-500">Overall company attendance statistics.</p>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
-                {dashboardData.hrAttendanceSummary.officeCount}
-              </div>
-              <div className="text-sm text-slate-600">In Office</div>
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-slate-900">Company Attendance</h2>
+          <p className="text-sm text-slate-500">Organisation-wide status today</p>
+          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="rounded-xl bg-emerald-50 p-4 text-center">
+              <div className="text-2xl font-bold text-emerald-700">{dashboardData.hrAttendanceSummary.officeCount}</div>
+              <div className="mt-0.5 text-xs font-medium text-emerald-600">In Office</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
-                {dashboardData.hrAttendanceSummary.wfhCount}
-              </div>
-              <div className="text-sm text-slate-600">Work from Home</div>
+            <div className="rounded-xl bg-blue-50 p-4 text-center">
+              <div className="text-2xl font-bold text-blue-700">{dashboardData.hrAttendanceSummary.wfhCount}</div>
+              <div className="mt-0.5 text-xs font-medium text-blue-600">Remote</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-red-600">
-                {dashboardData.hrAttendanceSummary.oooCount}
-              </div>
-              <div className="text-sm text-slate-600">Out of Office</div>
+            <div className="rounded-xl bg-rose-50 p-4 text-center">
+              <div className="text-2xl font-bold text-rose-700">{dashboardData.hrAttendanceSummary.oooCount}</div>
+              <div className="mt-0.5 text-xs font-medium text-rose-600">Out of Office</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-slate-600">
-                {dashboardData.hrAttendanceSummary.totalEmployees}
-              </div>
-              <div className="text-sm text-slate-600">Total Employees</div>
+            <div className="rounded-xl bg-slate-50 p-4 text-center">
+              <div className="text-2xl font-bold text-slate-700">{dashboardData.hrAttendanceSummary.totalEmployees}</div>
+              <div className="mt-0.5 text-xs font-medium text-slate-500">Total</div>
             </div>
           </div>
         </section>
       )}
 
       {isManager && dashboardData.teamAttendanceCharts && (
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="mb-4">
-            <h2 className="text-lg font-semibold text-slate-900">Team Attendance Overview</h2>
-            <p className="text-sm text-slate-500">Weekly breakdown of team working arrangements.</p>
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-5">
+            <h2 className="text-lg font-semibold text-slate-900">Team Attendance</h2>
+            <p className="text-sm text-slate-500">Where your team is working today</p>
           </div>
-          <div className="flex items-center justify-center">
-            <div className="relative">
-              <svg width="200" height="200" viewBox="0 0 200 200">
+          <div className="grid gap-6 sm:grid-cols-[auto_1fr]">
+            <div className="relative mx-auto">
+              <svg width="160" height="160" viewBox="0 0 160 160">
                 {(() => {
                   const officeTotal = dashboardData.teamAttendanceCharts!.officeAttendance[0] || 0;
                   const wfhTotal = dashboardData.teamAttendanceCharts!.wfh[0] || 0;
@@ -225,88 +231,68 @@ export default function HomePage() {
 
                   if (total === 0) return null;
 
-                  const officeAngle = (officeTotal / total) * 360;
-                  const wfhAngle = (wfhTotal / total) * 360;
-                  const oooAngle = (oooTotal / total) * 360;
+                  const radius = 60;
+                  const cx = 80;
+                  const cy = 80;
+                  const gap = 2;
 
-                  const createSlice = (startAngle: number, endAngle: number, color: string, label: string, count: number) => {
-                    const startAngleRad = (startAngle - 90) * (Math.PI / 180);
-                    const endAngleRad = (endAngle - 90) * (Math.PI / 180);
+                  const segments = [
+                    { value: officeTotal, color: "#10b981" },
+                    { value: wfhTotal, color: "#3b82f6" },
+                    { value: oooTotal, color: "#f43f5e" },
+                  ].filter(s => s.value > 0);
 
-                    const x1 = 100 + 80 * Math.cos(startAngleRad);
-                    const y1 = 100 + 80 * Math.sin(startAngleRad);
-                    const x2 = 100 + 80 * Math.cos(endAngleRad);
-                    const y2 = 100 + 80 * Math.sin(endAngleRad);
+                  let currentAngle = -90;
+                  return segments.map((seg, i) => {
+                    const angle = (seg.value / total) * 360 - gap;
+                    const startRad = (currentAngle * Math.PI) / 180;
+                    const endRad = ((currentAngle + angle) * Math.PI) / 180;
+                    currentAngle += angle + gap;
 
-                    const largeArcFlag = endAngle - startAngle > 180 ? 1 : 0;
-
-                    const pathData = [
-                      `M 100 100`,
-                      `L ${x1} ${y1}`,
-                      `A 80 80 0 ${largeArcFlag} 1 ${x2} ${y2}`,
-                      `Z`
-                    ].join(' ');
+                    const x1 = cx + radius * Math.cos(startRad);
+                    const y1 = cy + radius * Math.sin(startRad);
+                    const x2 = cx + radius * Math.cos(endRad);
+                    const y2 = cy + radius * Math.sin(endRad);
+                    const large = angle > 180 ? 1 : 0;
 
                     return (
                       <path
-                        key={label}
-                        d={pathData}
-                        fill={color}
-                        stroke="white"
-                        strokeWidth="2"
-                        className="hover:opacity-80 transition-opacity cursor-pointer"
-                      >
-                        <title>{`${label}: ${count} people`}</title>
-                      </path>
+                        key={i}
+                        d={`M ${cx} ${cy} L ${x1} ${y1} A ${radius} ${radius} 0 ${large} 1 ${x2} ${y2} Z`}
+                        fill={seg.color}
+                        className="transition-opacity hover:opacity-80"
+                      />
                     );
-                  };
-
-                  let currentAngle = 0;
-                  const slices = [];
-
-                  if (officeTotal > 0) {
-                    slices.push(createSlice(currentAngle, currentAngle + officeAngle, "#10b981", "Office", officeTotal));
-                    currentAngle += officeAngle;
-                  }
-                  if (wfhTotal > 0) {
-                    slices.push(createSlice(currentAngle, currentAngle + wfhAngle, "#3b82f6", "Work from Home", wfhTotal));
-                    currentAngle += wfhAngle;
-                  }
-                  if (oooTotal > 0) {
-                    slices.push(createSlice(currentAngle, currentAngle + oooAngle, "#ef4444", "Out of Office", oooTotal));
-                  }
-
-                  return slices;
+                  });
                 })()}
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-slate-900">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm">
+                  <span className="text-lg font-bold text-slate-900">
                     {(dashboardData.teamAttendanceCharts!.officeAttendance[0] || 0) +
                      (dashboardData.teamAttendanceCharts!.wfh[0] || 0) +
                      (dashboardData.teamAttendanceCharts!.ooo[0] || 0)}
-                  </div>
-                  <div className="text-sm text-slate-500">Total</div>
+                  </span>
                 </div>
               </div>
             </div>
-            <div className="ml-8 space-y-2">
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-green-500 rounded"></div>
-                <span className="text-sm">
-                  Office: {dashboardData.teamAttendanceCharts!.officeAttendance[0] || 0} people
+            <div className="flex flex-col justify-center gap-3">
+              <div className="flex items-center gap-3 rounded-lg bg-emerald-50 px-4 py-2.5">
+                <div className="h-3 w-3 rounded-full bg-emerald-500" />
+                <span className="text-sm font-medium text-emerald-800">
+                  {dashboardData.teamAttendanceCharts!.officeAttendance[0] || 0} in office
                 </span>
               </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                <span className="text-sm">
-                  Work from Home: {dashboardData.teamAttendanceCharts!.wfh[0] || 0} people
+              <div className="flex items-center gap-3 rounded-lg bg-blue-50 px-4 py-2.5">
+                <div className="h-3 w-3 rounded-full bg-blue-500" />
+                <span className="text-sm font-medium text-blue-800">
+                  {dashboardData.teamAttendanceCharts!.wfh[0] || 0} remote
                 </span>
               </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-red-500 rounded"></div>
-                <span className="text-sm">
-                  Out of Office: {dashboardData.teamAttendanceCharts!.ooo[0] || 0} people
+              <div className="flex items-center gap-3 rounded-lg bg-rose-50 px-4 py-2.5">
+                <div className="h-3 w-3 rounded-full bg-rose-500" />
+                <span className="text-sm font-medium text-rose-800">
+                  {dashboardData.teamAttendanceCharts!.ooo[0] || 0} out of office
                 </span>
               </div>
             </div>
@@ -315,45 +301,63 @@ export default function HomePage() {
       )}
 
       {isManager && dashboardData.directReportsGantt && (
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="mb-4">
-            <h2 className="text-lg font-semibold text-slate-900">Direct Reports Schedule</h2>
-            <p className="text-sm text-slate-500">Gantt chart view of your team's weekly schedules.</p>
+            <h2 className="text-lg font-semibold text-slate-900">Direct Reports</h2>
+            <p className="text-sm text-slate-500">This week at a glance</p>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1">
+            <div className="flex items-center border-b border-slate-100 pb-2">
+              <div className="w-36" />
+              {DAY_LABELS.map((d) => (
+                <div key={d} className="flex-1 text-center text-[11px] font-semibold uppercase tracking-wider text-slate-400">{d}</div>
+              ))}
+            </div>
             {dashboardData.directReportsGantt.reports.map((report) => (
-              <div key={report.employeeId} className="flex items-center space-x-4">
-                <div className="w-32 text-sm font-medium">{report.name}</div>
-                <div className="flex space-x-1">
-                  {report.schedule.map((status, idx) => (
-                    <div
-                      key={idx}
-                      className={`h-6 w-6 rounded ${
-                        status === "IN_OFFICE"
-                          ? "bg-green-500"
-                          : status === "REMOTE"
-                          ? "bg-blue-500"
-                          : status === "OOO"
-                          ? "bg-red-500"
-                          : "bg-gray-300"
-                      }`}
-                      title={`${report.name} - Day ${idx + 1}: ${status}`}
-                    ></div>
-                  ))}
+              <div key={report.employeeId} className="flex items-center py-2">
+                <div className="w-36 flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-[11px] font-semibold text-slate-600">
+                    {report.name.split(" ").map(n => n[0]).join("")}
+                  </div>
+                  <span className="text-sm font-medium text-slate-700 truncate">{report.name}</span>
                 </div>
+                {report.schedule.map((status, idx) => (
+                  <div key={idx} className="flex flex-1 items-center justify-center">
+                    <div
+                      className={`h-7 w-full max-w-[3rem] rounded-md ${
+                        status === "IN_OFFICE"
+                          ? "bg-emerald-400"
+                          : status === "REMOTE"
+                          ? "bg-blue-400"
+                          : status === "OOO"
+                          ? "bg-rose-400"
+                          : "bg-slate-200"
+                      }`}
+                      title={`${report.name}: ${status}`}
+                    />
+                  </div>
+                ))}
               </div>
             ))}
+          </div>
+          <div className="mt-3 flex items-center gap-4 border-t border-slate-100 pt-3">
+            <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-sm bg-emerald-400" /><span className="text-[11px] text-slate-500">Office</span></div>
+            <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-sm bg-blue-400" /><span className="text-[11px] text-slate-500">Remote</span></div>
+            <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-sm bg-rose-400" /><span className="text-[11px] text-slate-500">Out</span></div>
+            <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-sm bg-slate-200" /><span className="text-[11px] text-slate-500">Pending</span></div>
           </div>
         </section>
       )}
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">Weekly Team Schedule</h2>
-            <p className="text-sm text-slate-500">Direct teammates by default, with color-coded working locations.</p>
+            <h2 className="text-lg font-semibold text-slate-900">Weekly Schedule</h2>
+            <p className="text-sm text-slate-500">Team working locations this week</p>
           </div>
-          <div className="text-sm text-slate-500">Week of 2026-05-04</div>
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+            Week of {new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+          </span>
         </div>
         <WeeklyScheduleGrid rows={dashboardData.teamSchedule} />
       </section>
