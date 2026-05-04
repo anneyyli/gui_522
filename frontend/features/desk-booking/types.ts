@@ -6,6 +6,7 @@ export interface DeskAvailability {
   hasMonitor: boolean;
   hasStandingOption: boolean;
   available: boolean;
+  bookedByInitials?: string;
 }
 
 export interface BookingResponse {

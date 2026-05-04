@@ -13,4 +13,5 @@ public class DeskAvailabilityResponse {
     private boolean hasMonitor;
     private boolean hasStandingOption;
     private boolean available;
+    private String bookedByInitials;
 }

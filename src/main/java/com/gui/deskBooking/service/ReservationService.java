@@ -84,9 +84,28 @@ public class ReservationService {
                     response.setZone(desk.getZone());
                     response.setHasMonitor(desk.isHasMonitor());
                     response.setHasStandingOption(desk.isHasStandingOption());
-                    response.setAvailable(bookingsForDate.stream()
-                            .noneMatch(b -> b.getDeskId().equals(desk.getId())
-                                    && b.getStatus() == DeskBooking.BookingStatus.CONFIRMED));
+
+                    var confirmedBooking = bookingsForDate.stream()
+                            .filter(b -> b.getDeskId().equals(desk.getId())
+                                    && b.getStatus() == DeskBooking.BookingStatus.CONFIRMED)
+                            .findFirst();
+
+                    response.setAvailable(confirmedBooking.isEmpty());
+
+                    confirmedBooking.ifPresent(b -> {
+                        try {
+                            var employee = hrClient.getEmployeeById(b.getEmployeeId());
+                            String name = employee.getName();
+                            String[] parts = name.split(" ");
+                            String initials = parts.length >= 2
+                                    ? ("" + parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase()
+                                    : name.substring(0, Math.min(2, name.length())).toUpperCase();
+                            response.setBookedByInitials(initials);
+                        } catch (Exception e) {
+                            response.setBookedByInitials("??");
+                        }
+                    });
+
                     return response;
                 })
                 .toList();

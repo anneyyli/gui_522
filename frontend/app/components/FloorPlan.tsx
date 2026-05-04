@@ -3,6 +3,7 @@ import type { DeskAvailability } from "@/features/desk-booking/types";
 const deskStyles: Record<string, string> = {
   AVAILABLE: "border-slate-300 bg-white text-slate-700 hover:border-teal-500 hover:shadow cursor-pointer",
   BOOKED: "border-slate-200 bg-slate-200 text-slate-500 cursor-not-allowed",
+  TEAM_BOOKED: "border-blue-200 bg-blue-50 text-blue-700 cursor-not-allowed",
   UNAVAILABLE: "border-rose-200 bg-rose-100 text-rose-700 cursor-not-allowed",
 };
 
@@ -22,7 +23,7 @@ export default function FloorPlan({
 
       <div className="grid grid-cols-3 gap-3 rounded-2xl bg-slate-50 p-5 sm:grid-cols-4 lg:grid-cols-5">
         {desks.map((desk) => {
-          const status = desk.available ? "AVAILABLE" : "BOOKED";
+          const status = desk.available ? "AVAILABLE" : desk.bookedByInitials ? "TEAM_BOOKED" : "BOOKED";
           const isSelected = desk.deskId === selectedDeskId;
 
           return (
@@ -36,7 +37,7 @@ export default function FloorPlan({
               <div className="mb-1 flex items-center justify-between">
                 <span className="text-xs font-semibold">{desk.deskLabel}</span>
                 <span className="text-xs font-bold">
-                  {desk.available ? "+" : "•"}
+                  {desk.available ? "+" : (desk.bookedByInitials || "•")}
                 </span>
               </div>
               <div className="text-[11px] text-slate-500">{desk.zone}</div>

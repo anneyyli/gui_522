@@ -113,8 +113,16 @@ export default function DeskBookingPage() {
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <p className="text-sm font-medium text-teal-700">Desk Booking</p>
-          <h1 className="text-3xl font-semibold text-slate-900">Floor 4 - Engineering</h1>
+          <h1 className="text-3xl font-semibold text-slate-900">Birmingham Office</h1>
           <p className="mt-1 text-sm text-slate-600">Select a date to view availability and book desks for your team.</p>
+          {desks.length > 0 && (
+            <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15" />
+              </svg>
+              Floor {desks[0]?.floor || "1"} · {desks[0]?.zone || "Open Plan"}
+            </span>
+          )}
         </div>
         <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
           <div className="font-medium text-slate-900">Selected date</div>
