@@ -114,7 +114,7 @@ public class ReservationService {
                                     : name.substring(0, Math.min(2, name.length())).toUpperCase();
                             response.setBookedByInitials(initials);
                         } catch (Exception e) {
-                            response.setBookedByInitials("??");
+                            response.setBookedByInitials(null);
                         }
                     });
 

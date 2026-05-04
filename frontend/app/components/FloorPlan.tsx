@@ -125,7 +125,7 @@ export default function FloorPlan({
                       <span className={`text-[9px] leading-none mt-0.5 font-bold ${
                         isAvailable ? "text-teal-600" : hasTeam ? "text-blue-600" : "text-slate-400"
                       }`}>
-                        {isAvailable ? "+" : (desk.bookedByInitials || "•")}
+                        {isAvailable ? "+" : (desk.bookedByInitials && desk.bookedByInitials !== "??" ? desk.bookedByInitials : "•")}
                       </span>
                       {(desk.hasMonitor || desk.hasStandingOption) && (
                         <div className="absolute top-0.5 right-0.5 flex gap-px">
