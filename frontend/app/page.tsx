@@ -96,29 +96,13 @@ export default function HomePage() {
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
         setDashboardData({
-          occupiedDesks: 42,
-          totalDesks: 50,
-          occupiedRooms: 4,
+          occupiedDesks: 0,
+          totalDesks: 90,
+          occupiedRooms: 0,
           totalRooms: 6,
           site: "Birmingham",
           floor: "Floor 4 - Engineering",
-          teamSchedule: [
-            {
-              name: "Alice Johnson",
-              role: "Manager",
-              days: ["IN_OFFICE", "REMOTE", "IN_OFFICE", "IN_OFFICE", "OUT_OF_OFFICE"],
-            },
-            {
-              name: "Bob Smith",
-              role: "Engineer",
-              days: ["REMOTE", "REMOTE", "IN_OFFICE", "PENDING", "IN_OFFICE"],
-            },
-            {
-              name: "Carol White",
-              role: "Engineer",
-              days: ["IN_OFFICE", "IN_OFFICE", "IN_OFFICE", "REMOTE", "REMOTE"],
-            },
-          ],
+          teamSchedule: [],
         });
       } finally {
         setLoading(false);

@@ -15,7 +15,7 @@
     "name": "Bob Smith",
     "role": "TEAM_MEMBER",
     "team": "Engineering",
-    "reportsTo": null
+    "reportsTo": "E001"
   },
   {
     "employeeId": "E003",
@@ -42,7 +42,7 @@
     "name": "Eve Adams",
     "role": "TEAM_MEMBER",
     "team": "Engineering",
-    "reportsTo": null
+    "reportsTo": "E001"
   },
   {
     "employeeId": "E006",
