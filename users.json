@@ -5,6 +5,7 @@
     "password": "password123",
     "name": "Alice Johnson",
     "role": "MANAGER",
+    "team": "Engineering",
     "reportsTo": null
   },
   {
@@ -13,6 +14,7 @@
     "password": "password123",
     "name": "Bob Smith",
     "role": "TEAM_MEMBER",
+    "team": "Engineering",
     "reportsTo": null
   },
   {
@@ -21,6 +23,7 @@
     "password": "password123",
     "name": "Charlie Brown",
     "role": "TEAM_MEMBER",
+    "team": "Engineering",
     "reportsTo": "E001"
   },
   {
@@ -29,6 +32,7 @@
     "password": "password123",
     "name": "Diana Prince",
     "role": "TEAM_MEMBER",
+    "team": "Engineering",
     "reportsTo": "E001"
   },
   {
@@ -37,6 +41,7 @@
     "password": "password123",
     "name": "Eve Adams",
     "role": "TEAM_MEMBER",
+    "team": "Engineering",
     "reportsTo": null
   },
   {
@@ -45,6 +50,16 @@
     "password": "password123",
     "name": "Frank Miller",
     "role": "HR",
+    "team": "HR",
+    "reportsTo": null
+  },
+  {
+    "employeeId": "E007",
+    "email": "grace@company.com",
+    "password": "password123",
+    "name": "Grace Chen",
+    "role": "HR",
+    "team": "HR",
     "reportsTo": null
   }
 ]

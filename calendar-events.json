@@ -1,0 +1,352 @@
+[
+  {
+    "eventId": "evt_001",
+    "employeeId": "E001",
+    "employeeName": "Alice Johnson",
+    "role": "MANAGER",
+    "date": "2026-05-05",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Regular office day"
+  },
+  {
+    "eventId": "evt_002",
+    "employeeId": "E001",
+    "employeeName": "Alice Johnson",
+    "role": "MANAGER",
+    "date": "2026-05-06",
+    "status": "REMOTE",
+    "eventType": "work_schedule",
+    "description": "Working from home"
+  },
+  {
+    "eventId": "evt_003",
+    "employeeId": "E001",
+    "employeeName": "Alice Johnson",
+    "role": "MANAGER",
+    "date": "2026-05-07",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Team meeting in office"
+  },
+  {
+    "eventId": "evt_004",
+    "employeeId": "E001",
+    "employeeName": "Alice Johnson",
+    "role": "MANAGER",
+    "date": "2026-05-08",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_005",
+    "employeeId": "E001",
+    "employeeName": "Alice Johnson",
+    "role": "MANAGER",
+    "date": "2026-05-09",
+    "status": "OUT_OF_OFFICE",
+    "eventType": "vacation",
+    "description": "Annual leave"
+  },
+  {
+    "eventId": "evt_006",
+    "employeeId": "E002",
+    "employeeName": "Bob Smith",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-05",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_007",
+    "employeeId": "E002",
+    "employeeName": "Bob Smith",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-06",
+    "status": "REMOTE",
+    "eventType": "work_schedule",
+    "description": "Remote work"
+  },
+  {
+    "eventId": "evt_008",
+    "employeeId": "E002",
+    "employeeName": "Bob Smith",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-07",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_009",
+    "employeeId": "E002",
+    "employeeName": "Bob Smith",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-08",
+    "status": "PENDING",
+    "eventType": "work_schedule",
+    "description": "Schedule to be confirmed"
+  },
+  {
+    "eventId": "evt_010",
+    "employeeId": "E002",
+    "employeeName": "Bob Smith",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-09",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_011",
+    "employeeId": "E003",
+    "employeeName": "Charlie Brown",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-05",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_012",
+    "employeeId": "E003",
+    "employeeName": "Charlie Brown",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-06",
+    "status": "REMOTE",
+    "eventType": "work_schedule",
+    "description": "Remote work"
+  },
+  {
+    "eventId": "evt_013",
+    "employeeId": "E003",
+    "employeeName": "Charlie Brown",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-07",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_014",
+    "employeeId": "E003",
+    "employeeName": "Charlie Brown",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-08",
+    "status": "OUT_OF_OFFICE",
+    "eventType": "sick_leave",
+    "description": "Medical leave"
+  },
+  {
+    "eventId": "evt_015",
+    "employeeId": "E003",
+    "employeeName": "Charlie Brown",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-09",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_016",
+    "employeeId": "E004",
+    "employeeName": "Diana Prince",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-05",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_017",
+    "employeeId": "E004",
+    "employeeName": "Diana Prince",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-06",
+    "status": "REMOTE",
+    "eventType": "work_schedule",
+    "description": "Remote work"
+  },
+  {
+    "eventId": "evt_018",
+    "employeeId": "E004",
+    "employeeName": "Diana Prince",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-07",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_019",
+    "employeeId": "E004",
+    "employeeName": "Diana Prince",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-08",
+    "status": "OUT_OF_OFFICE",
+    "eventType": "training",
+    "description": "External training"
+  },
+  {
+    "eventId": "evt_020",
+    "employeeId": "E004",
+    "employeeName": "Diana Prince",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-09",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_021",
+    "employeeId": "E005",
+    "employeeName": "Eve Adams",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-05",
+    "status": "REMOTE",
+    "eventType": "work_schedule",
+    "description": "Remote work"
+  },
+  {
+    "eventId": "evt_022",
+    "employeeId": "E005",
+    "employeeName": "Eve Adams",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-06",
+    "status": "REMOTE",
+    "eventType": "work_schedule",
+    "description": "Remote work"
+  },
+  {
+    "eventId": "evt_023",
+    "employeeId": "E005",
+    "employeeName": "Eve Adams",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-07",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_024",
+    "employeeId": "E005",
+    "employeeName": "Eve Adams",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-08",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_025",
+    "employeeId": "E005",
+    "employeeName": "Eve Adams",
+    "role": "TEAM_MEMBER",
+    "date": "2026-05-09",
+    "status": "OUT_OF_OFFICE",
+    "eventType": "vacation",
+    "description": "Vacation day"
+  },
+  {
+    "eventId": "evt_026",
+    "employeeId": "E006",
+    "employeeName": "Frank Miller",
+    "role": "HR",
+    "date": "2026-05-05",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_027",
+    "employeeId": "E006",
+    "employeeName": "Frank Miller",
+    "role": "HR",
+    "date": "2026-05-06",
+    "status": "REMOTE",
+    "eventType": "work_schedule",
+    "description": "Remote work"
+  },
+  {
+    "eventId": "evt_028",
+    "employeeId": "E006",
+    "employeeName": "Frank Miller",
+    "role": "HR",
+    "date": "2026-05-07",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_029",
+    "employeeId": "E006",
+    "employeeName": "Frank Miller",
+    "role": "HR",
+    "date": "2026-05-08",
+    "status": "OUT_OF_OFFICE",
+    "eventType": "meeting",
+    "description": "External HR conference"
+  },
+  {
+    "eventId": "evt_030",
+    "employeeId": "E006",
+    "employeeName": "Frank Miller",
+    "role": "HR",
+    "date": "2026-05-09",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_031",
+    "employeeId": "E007",
+    "employeeName": "Grace Abrams",
+    "role": "HR",
+    "date": "2026-05-05",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_032",
+    "employeeId": "E007",
+    "employeeName": "Grace Abrams",
+    "role": "HR",
+    "date": "2026-05-06",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_033",
+    "employeeId": "E007",
+    "employeeName": "Grace Abrams",
+    "role": "HR",
+    "date": "2026-05-07",
+    "status": "REMOTE",
+    "eventType": "work_schedule",
+    "description": "Remote work"
+  },
+  {
+    "eventId": "evt_034",
+    "employeeId": "E007",
+    "employeeName": "Grace Abrams",
+    "role": "HR",
+    "date": "2026-05-08",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  },
+  {
+    "eventId": "evt_035",
+    "employeeId": "E007",
+    "employeeName": "Grace Abrams",
+    "role": "HR",
+    "date": "2026-05-09",
+    "status": "IN_OFFICE",
+    "eventType": "work_schedule",
+    "description": "Office day"
+  }
+]

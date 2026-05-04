@@ -50,86 +50,8 @@ public class DashboardService {
             response.setHrAttendanceSummary(getHrAttendanceSummary());
         }
 
-        // Build team schedule based on role
-        List<WeeklyScheduleRowResponse> teamSchedule = new ArrayList<>();
-
-        if ("HR".equals(role)) {
-            // For HR, show other HR colleagues
-            try {
-                java.io.File usersFile = new java.io.File("users.json");
-                List<Map<String, Object>> allUsers = objectMapper.readValue(usersFile,
-                    objectMapper.getTypeFactory().constructCollectionType(List.class, Map.class));
-
-                for (Map<String, Object> user : allUsers) {
-                    String userId = (String) user.get("employeeId");
-                    String userRole = (String) user.get("role");
-                    if (!userId.equals(employeeId) && "HR".equals(userRole)) {
-                        WeeklyScheduleRowResponse hrColleague = new WeeklyScheduleRowResponse();
-                        hrColleague.setName((String) user.get("name"));
-                        hrColleague.setRole("HR");
-                        // Mock schedule - in real app, this would come from attendance system
-                        hrColleague.setDays(List.of("IN_OFFICE", "REMOTE", "IN_OFFICE", "OUT_OF_OFFICE", "IN_OFFICE"));
-                        teamSchedule.add(hrColleague);
-                    }
-                }
-            } catch (Exception e) {
-                // Fallback to mock data if file read fails
-                WeeklyScheduleRowResponse fallback = new WeeklyScheduleRowResponse();
-                fallback.setName("HR Colleague");
-                fallback.setRole("HR");
-                fallback.setDays(List.of("IN_OFFICE", "REMOTE", "IN_OFFICE", "OUT_OF_OFFICE", "IN_OFFICE"));
-                teamSchedule.add(fallback);
-            }
-        } else {
-            // For managers and team members, show actual team data
-            // Add manager
-            WeeklyScheduleRowResponse manager = new WeeklyScheduleRowResponse();
-            manager.setName(getUserName(employeeId));
-            manager.setRole("Manager");
-            manager.setDays(List.of("IN_OFFICE", "REMOTE", "IN_OFFICE", "IN_OFFICE", "OUT_OF_OFFICE"));
-            teamSchedule.add(manager);
-
-            // Add direct reports (for managers only)
-            if ("MANAGER".equals(role)) {
-                List<String> directReports = getDirectReports(employeeId);
-                for (String reportId : directReports) {
-                    WeeklyScheduleRowResponse report = new WeeklyScheduleRowResponse();
-                    report.setName(getUserName(reportId));
-                    report.setRole("Team Member");
-                    // Mock schedule - in real app, this would come from attendance system
-                    report.setDays(List.of("IN_OFFICE", "REMOTE", "IN_OFFICE", "OOO", "IN_OFFICE"));
-                    teamSchedule.add(report);
-                }
-            }
-
-            // Add other team members (not direct reports)
-            try {
-                java.io.File usersFile = new java.io.File("users.json");
-                List<Map<String, Object>> allUsers = objectMapper.readValue(usersFile,
-                    objectMapper.getTypeFactory().constructCollectionType(List.class, Map.class));
-
-                for (Map<String, Object> user : allUsers) {
-                    String userId = (String) user.get("employeeId");
-                    String userRole = (String) user.get("role");
-                    if (!userId.equals(employeeId) &&
-                        !"HR".equals(userRole) &&
-                        ("MANAGER".equals(role) || !getDirectReports(employeeId).contains(userId))) {
-                        WeeklyScheduleRowResponse member = new WeeklyScheduleRowResponse();
-                        member.setName((String) user.get("name"));
-                        member.setRole("Team Member");
-                        member.setDays(List.of("REMOTE", "REMOTE", "IN_OFFICE", "PENDING", "IN_OFFICE"));
-                        teamSchedule.add(member);
-                    }
-                }
-            } catch (Exception e) {
-                // Fallback to mock data if file read fails
-                WeeklyScheduleRowResponse fallback = new WeeklyScheduleRowResponse();
-                fallback.setName("Team Member");
-                fallback.setRole("Team Member");
-                fallback.setDays(List.of("REMOTE", "REMOTE", "IN_OFFICE", "PENDING", "IN_OFFICE"));
-                teamSchedule.add(fallback);
-            }
-        }
+        // Build team schedule from calendar system
+        List<WeeklyScheduleRowResponse> teamSchedule = buildTeamScheduleFromCalendar(employeeId, role);
 
         response.setTeamSchedule(teamSchedule);
         return response;
@@ -164,6 +86,22 @@ public class DashboardService {
                 .orElse(employeeId);
         } catch (Exception e) {
             return employeeId;
+        }
+    }
+
+    private String getUserTeam(String employeeId) {
+        try {
+            java.io.File usersFile = new java.io.File("users.json");
+            List<Map<String, Object>> users = objectMapper.readValue(usersFile,
+                objectMapper.getTypeFactory().constructCollectionType(List.class, Map.class));
+
+            return users.stream()
+                .filter(u -> employeeId.equals(u.get("employeeId")))
+                .map(u -> (String) u.get("team"))
+                .findFirst()
+                .orElse("Engineering");
+        } catch (Exception e) {
+            return "Engineering";
         }
     }
 
@@ -257,5 +195,100 @@ public class DashboardService {
             "oooCount", oooCount,
             "totalEmployees", officeCount + wfhCount + oooCount
         );
+    }
+
+    private List<WeeklyScheduleRowResponse> buildTeamScheduleFromCalendar(String employeeId, String role) {
+        List<WeeklyScheduleRowResponse> teamSchedule = new ArrayList<>();
+
+        try {
+            // Read calendar events from external system
+            java.io.File calendarFile = new java.io.File("calendar-events.json");
+            List<Map<String, Object>> calendarEvents = objectMapper.readValue(calendarFile,
+                objectMapper.getTypeFactory().constructCollectionType(List.class, Map.class));
+
+            // Get current week dates (Monday to Friday)
+            LocalDate today = LocalDate.now();
+            LocalDate monday = today.with(java.time.DayOfWeek.MONDAY);
+            List<LocalDate> weekDates = new ArrayList<>();
+            for (int i = 0; i < 5; i++) {
+                weekDates.add(monday.plusDays(i));
+            }
+
+            // Group events by employee and filter for current week
+            Map<String, List<Map<String, Object>>> eventsByEmployee = calendarEvents.stream()
+                .filter(event -> {
+                    String eventDateStr = (String) event.get("date");
+                    LocalDate eventDate = LocalDate.parse(eventDateStr);
+                    return weekDates.contains(eventDate);
+                })
+                .collect(Collectors.groupingBy(event -> (String) event.get("employeeId")));
+
+            // Get user's team
+            String userTeam = getUserTeam(employeeId);
+
+            // Get all users to filter by team
+            java.io.File usersFile = new java.io.File("users.json");
+            List<Map<String, Object>> allUsers = objectMapper.readValue(usersFile,
+                objectMapper.getTypeFactory().constructCollectionType(List.class, Map.class));
+
+            // Determine which employees to show based on team
+            java.util.Set<String> employeesToShow = new java.util.HashSet<>();
+
+            // All users show their team members from calendar events
+            for (Map<String, Object> user : allUsers) {
+                String userId = (String) user.get("employeeId");
+                String usersTeam = (String) user.get("team");
+                
+                if (userTeam.equals(usersTeam) && eventsByEmployee.containsKey(userId)) {
+                    employeesToShow.add(userId);
+                }
+            }
+
+            // Build schedule rows for each employee
+            for (String empId : employeesToShow) {
+                List<Map<String, Object>> employeeEvents = eventsByEmployee.get(empId);
+                if (employeeEvents == null || employeeEvents.isEmpty()) {
+                    continue;
+                }
+
+                // Sort events by date
+                employeeEvents.sort((a, b) -> ((String) a.get("date")).compareTo((String) b.get("date")));
+
+                // Get employee info from first event
+                Map<String, Object> firstEvent = employeeEvents.get(0);
+                String empName = (String) firstEvent.get("employeeName");
+                String empRole = (String) firstEvent.get("role");
+
+                // Build days array
+                List<String> days = new ArrayList<>();
+                for (LocalDate date : weekDates) {
+                    String dateStr = date.toString();
+                    String status = employeeEvents.stream()
+                        .filter(event -> dateStr.equals(event.get("date")))
+                        .map(event -> (String) event.get("status"))
+                        .findFirst()
+                        .orElse("PENDING");
+                    days.add(status);
+                }
+
+                WeeklyScheduleRowResponse row = new WeeklyScheduleRowResponse();
+                row.setEmployeeId(empId);
+                row.setName(empName);
+                row.setRole("HR".equals(empRole) ? "HR" : "Manager".equals(empRole) ? "Manager" : "Team Member");
+                row.setDays(days);
+                teamSchedule.add(row);
+            }
+
+        } catch (Exception e) {
+            // Fallback to basic mock data if calendar system fails
+            WeeklyScheduleRowResponse fallback = new WeeklyScheduleRowResponse();
+            fallback.setEmployeeId("fallback");
+            fallback.setName("Team Member");
+            fallback.setRole("Team Member");
+            fallback.setDays(List.of("REMOTE", "REMOTE", "IN_OFFICE", "PENDING", "IN_OFFICE"));
+            teamSchedule.add(fallback);
+        }
+
+        return teamSchedule;
     }
 }

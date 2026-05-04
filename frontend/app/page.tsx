@@ -16,6 +16,7 @@ interface DashboardData {
   site: string;
   floor: string;
   teamSchedule: Array<{
+    employeeId?: string;
     name: string;
     role: string;
     days: string[];

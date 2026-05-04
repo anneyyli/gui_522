@@ -15,6 +15,7 @@ const statusLabels: Record<string, string> = {
 };
 
 type Row = {
+  employeeId?: string;
   name: string;
   role: string;
   days: string[];
@@ -38,7 +39,7 @@ export default function WeeklyScheduleGrid({ rows }: { rows: Row[] }) {
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.name}>
+            <tr key={row.employeeId || row.name}>
               <td className="rounded-l-xl bg-slate-50 px-3 py-3">
                 <div className="font-medium text-slate-900">{row.name}</div>
                 <div className="text-xs text-slate-500">{row.role}</div>
