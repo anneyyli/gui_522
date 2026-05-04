@@ -1,14 +1,62 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/api";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
+const isBrowser = typeof window !== "undefined";
+
+function buildUrl(path: string) {
+  if (isBrowser) {
+    if (path.startsWith("/api")) {
+      return path;
+    }
+
+    if (path.startsWith("/")) {
+      return `/api${path}`;
+    }
+
+    return `/api/${path}`;
+  }
+
+  if (BASE_URL) {
+    const normalizedBaseUrl = BASE_URL.replace(/\/$/, "");
+    return path.startsWith("/") ? `${normalizedBaseUrl}${path}` : `${normalizedBaseUrl}/${path}`;
+  }
+
+  if (path.startsWith("/api")) {
+    return path;
+  }
+
+  if (path.startsWith("/")) {
+    return `/api${path}`;
+  }
+
+  return `/api/${path}`;
+}
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { "Content-Type": "application/json" },
+  const url = buildUrl(path);
+  const headers = {
+    "Content-Type": "application/json",
+    ...(options?.headers ?? {}),
+  };
+
+  const res = await fetch(url, {
     ...options,
+    headers,
+    credentials: options?.credentials ?? "include",
   });
+
   if (!res.ok) {
     const error = await res.json().catch(() => ({}));
     throw new Error(error.message ?? `Request failed: ${res.status}`);
   }
+
+  if (res.status === 204) {
+    return {} as T;
+  }
+
+  const contentType = res.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/json")) {
+    return {} as T;
+  }
+
   return res.json();
 }
 

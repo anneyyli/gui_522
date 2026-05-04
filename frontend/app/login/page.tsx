@@ -1,0 +1,87 @@
+"use client";
+
+import { FormEvent, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { clearCurrentUser, getCurrentUser, getCurrentUserSession, login } from "@/lib/auth";
+
+export default function LoginPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [employeeId, setEmployeeId] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const nextUrl = searchParams.get("next") ?? "/";
+
+  useEffect(() => {
+    const currentUser = getCurrentUser();
+    if (!currentUser) return;
+
+    getCurrentUserSession().then((verified) => {
+      if (verified) {
+        router.replace(nextUrl);
+      } else {
+        clearCurrentUser();
+      }
+    });
+  }, [nextUrl, router]);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError(null);
+
+    try {
+      await login(employeeId.trim(), password);
+      router.push(nextUrl);
+    } catch (err: any) {
+      setError(err?.message ?? "Unable to log in. Please try again.");
+    }
+  };
+
+  return (
+    <div className="mx-auto max-w-md space-y-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div>
+        <p className="text-sm font-medium text-teal-700">Welcome back</p>
+        <h1 className="text-3xl font-semibold text-slate-900">Sign in to HybridWork</h1>
+        <p className="mt-2 text-sm text-slate-500">Use your employee ID and password to manage desk bookings and custom views.</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {error && <div className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>}
+
+        <div>
+          <label htmlFor="employeeId" className="block text-xs font-medium uppercase tracking-wide text-slate-600">
+            Employee ID
+          </label>
+          <input
+            id="employeeId"
+            value={employeeId}
+            onChange={(event) => setEmployeeId(event.target.value)}
+            className="mt-2 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-100"
+            placeholder="E001"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="password" className="block text-xs font-medium uppercase tracking-wide text-slate-600">
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            className="mt-2 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-100"
+            placeholder="Password"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-700"
+        >
+          Sign in
+        </button>
+      </form>
+    </div>
+  );
+}

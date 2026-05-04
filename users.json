@@ -1,0 +1,16 @@
+[
+  {
+    "id": "U001",
+    "employeeId": "E001",
+    "email": "alice@company.com",
+    "password": "password123",
+    "name": "Alice Johnson"
+  },
+  {
+    "id": "U002",
+    "employeeId": "E002",
+    "email": "bob@company.com",
+    "password": "password123",
+    "name": "Bob Smith"
+  }
+]
