@@ -21,6 +21,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Core booking service that enforces reservation policies per stakeholder role.
+ * Managers may book multiple desks (for team coordination), while team members
+ * are limited to one desk per day to prevent resource hoarding.
+ * Availability is computed in real time against confirmed bookings so the floor
+ * plan always reflects the current state.
+ */
 @Service
 public class ReservationService {
 
@@ -73,6 +80,11 @@ public class ReservationService {
         return mapper.toResponse(booking, desk, employee);
     }
 
+    /**
+     * Merges desk layout data with booking state to produce the floor plan view.
+     * Booked desks display the occupant's initials so team members can see where
+     * colleagues are sitting — a key coordination feature from the design spec.
+     */
     public List<DeskAvailabilityResponse> getAvailability(LocalDate date) {
         var bookingsForDate = bookingRepository.findByDate(date);
         return officeClient.getAllDesks().stream()

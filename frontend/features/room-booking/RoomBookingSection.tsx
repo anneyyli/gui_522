@@ -1,3 +1,10 @@
+/**
+ * Meeting room booking with an hourly time-slot grid. Users first select a room
+ * (showing capacity and amenities like Video/Whiteboard), then pick an available
+ * slot. Booked slots are disabled and greyed out to prevent double-booking.
+ * Re-fetches availability when the parent's `refresh` counter changes, enabling
+ * cross-component reactivity (e.g., cancelling from MyBookings frees the slot).
+ */
 "use client";
 
 import { useEffect, useState } from "react";

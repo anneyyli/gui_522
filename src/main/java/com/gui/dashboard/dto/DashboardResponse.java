@@ -45,4 +45,8 @@ public class DashboardResponse {
     public Map<String, Object> getHrAttendanceSummary() { return hrAttendanceSummary; }
     public void setHrAttendanceSummary(Map<String, Object> hrAttendanceSummary) { this.hrAttendanceSummary = hrAttendanceSummary; }
 
+    private List<Map<String, Object>> weeklyTrend;
+    public List<Map<String, Object>> getWeeklyTrend() { return weeklyTrend; }
+    public void setWeeklyTrend(List<Map<String, Object>> weeklyTrend) { this.weeklyTrend = weeklyTrend; }
+
 }

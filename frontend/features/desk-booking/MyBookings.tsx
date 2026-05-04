@@ -1,3 +1,10 @@
+/**
+ * Displays the user's active bookings (desks and/or rooms) with inline cancel.
+ * A "filter" prop controls which booking type is shown — used to split desk and
+ * room bookings across their respective tabs while sharing one component.
+ * After cancellation, callbacks notify the parent so the floor plan or room
+ * availability grid can update without requiring a full page refresh.
+ */
 "use client";
 import { useEffect, useState } from "react";
 import { deskBookingApi } from "./api";

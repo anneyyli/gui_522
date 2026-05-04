@@ -16,6 +16,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
+/**
+ * Session-based auth using employee IDs from the HR system. CSRF is disabled
+ * as the frontend communicates via JSON APIs with credentials: "include".
+ * httpBasic and formLogin are explicitly disabled to prevent the framework
+ * from intercepting our custom /api/auth/login controller endpoint.
+ * CORS is restricted to localhost origins for development security.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -31,6 +38,8 @@ public class SecurityConfig {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
+            .httpBasic(basic -> basic.disable())
+            .formLogin(form -> form.disable())
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
             )

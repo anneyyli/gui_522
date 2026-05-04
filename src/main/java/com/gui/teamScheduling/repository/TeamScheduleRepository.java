@@ -13,30 +13,6 @@ public class TeamScheduleRepository {
     private final Map<String, TeamSchedule> store = new ConcurrentHashMap<>();
 
     public TeamScheduleRepository() {
-        TeamSchedule schedule1 = new TeamSchedule();
-        schedule1.setId("S001");
-        schedule1.setEmployeeId("E001");
-        schedule1.setDate(LocalDate.now().plusDays(1));
-        schedule1.setWorkMode(TeamSchedule.WorkMode.OFFICE);
-        schedule1.setOfficeLocation("Main Office");
-
-        TeamSchedule schedule2 = new TeamSchedule();
-        schedule2.setId("S002");
-        schedule2.setEmployeeId("E002");
-        schedule2.setDate(LocalDate.now().plusDays(1));
-        schedule2.setWorkMode(TeamSchedule.WorkMode.REMOTE);
-        schedule2.setOfficeLocation(null);
-
-        TeamSchedule schedule3 = new TeamSchedule();
-        schedule3.setId("S003");
-        schedule3.setEmployeeId("E001");
-        schedule3.setDate(LocalDate.now().plusDays(2));
-        schedule3.setWorkMode(TeamSchedule.WorkMode.OFFICE);
-        schedule3.setOfficeLocation("Branch Office");
-
-        store.put(schedule1.getId(), schedule1);
-        store.put(schedule2.getId(), schedule2);
-        store.put(schedule3.getId(), schedule3);
     }
 
     public void save(TeamSchedule schedule) { store.put(schedule.getId(), schedule); }

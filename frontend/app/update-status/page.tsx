@@ -1,3 +1,10 @@
+/**
+ * Personal status page where employees declare their working location for each
+ * weekday (Office, Remote, or Out of Office). This data feeds the manager's
+ * Direct Reports Gantt chart and the Team Attendance pie chart on the dashboard.
+ * The assumption (Section 1.6 of design) is that employees regularly update
+ * their status so the planner remains useful for team coordination.
+ */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -59,6 +66,8 @@ export default function UpdateStatusPage() {
     });
   }, [router]);
 
+  const [confirmationMessage, setConfirmationMessage] = useState<string | null>(null);
+
   const handleSetStatus = async (date: string, workMode: ScheduleEntry["workMode"]) => {
     if (!user) return;
     setSaving(date);
@@ -66,7 +75,9 @@ export default function UpdateStatusPage() {
       await teamSchedulingApi.setSchedule({ employeeId: user.employeeId, date, workMode });
       setSchedule((current) => ({ ...current, [date]: workMode }));
       setSaved(date);
-      setTimeout(() => setSaved(null), 1500);
+      const label = WORK_MODES.find(m => m.value === workMode)?.label ?? workMode;
+      setConfirmationMessage(`Status updated: ${formatDay(date)} set to "${label}"`);
+      setTimeout(() => { setSaved(null); setConfirmationMessage(null); }, 4000);
     } catch {
       alert("Failed to update status.");
     } finally {
@@ -85,6 +96,15 @@ export default function UpdateStatusPage() {
         <h1 className="text-3xl font-semibold text-slate-900">My Working Status</h1>
         <p className="mt-1 text-sm text-slate-600">Set your working location for each day this week so your team knows where you are.</p>
       </div>
+
+      {confirmationMessage && (
+        <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 shadow-sm">
+          <svg className="h-5 w-5 flex-shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <p className="text-sm font-medium text-emerald-800">{confirmationMessage}</p>
+        </div>
+      )}
 
       <div className="space-y-3">
         {weekDates.map((date) => {

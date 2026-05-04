@@ -1,3 +1,10 @@
+/**
+ * Role-based dashboard — the primary landing page after login.
+ * Displays different data depending on whether the user is a Manager, Team Member,
+ * or HR, following the principle of showing only information relevant to each
+ * stakeholder's responsibilities (reduces cognitive load and protects privacy).
+ * Occupancy data is fetched from real booking/room state, not hardcoded.
+ */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -39,6 +46,12 @@ interface DashboardData {
     oooCount: number;
     totalEmployees: number;
   };
+  weeklyTrend?: Array<{
+    day: string;
+    date: string;
+    occupied: number;
+    total: number;
+  }>;
 }
 
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
@@ -182,7 +195,7 @@ export default function HomePage() {
             <div>
               <h3 className="text-sm font-semibold text-amber-800">Capacity Alert</h3>
               <p className="mt-0.5 text-sm text-amber-700">
-                Office occupancy is at {Math.round((dashboardData.occupiedDesks / dashboardData.totalDesks) * 100)}% — approaching maximum capacity. Consider adjusting team schedules or opening additional floors.
+                Office occupancy is at {Math.round((dashboardData.occupiedDesks / dashboardData.totalDesks) * 100)}% ({dashboardData.occupiedDesks}/{dashboardData.totalDesks} desks) — this exceeds the 80% capacity threshold. Consider adjusting team schedules or opening additional floors.
               </p>
             </div>
           </div>
@@ -211,6 +224,39 @@ export default function HomePage() {
               <div className="mt-0.5 text-xs font-medium text-slate-500">Total</div>
             </div>
           </div>
+        </section>
+      )}
+
+      {isHR && dashboardData.weeklyTrend && (
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-slate-900">Weekly Occupancy Trend</h2>
+          <p className="text-sm text-slate-500">Desk usage across the current week</p>
+          <div className="mt-4 flex items-end gap-3">
+            {dashboardData.weeklyTrend.map((day) => {
+              const pct = day.total > 0 ? Math.round((day.occupied / day.total) * 100) : 0;
+              const isToday = day.date === new Date().toISOString().slice(0, 10);
+              return (
+                <div key={day.date} className="flex flex-1 flex-col items-center gap-1.5">
+                  <span className="text-xs font-medium text-slate-600">{pct}%</span>
+                  <div className="relative h-28 w-full rounded-lg bg-slate-100 overflow-hidden">
+                    <div
+                      className={`absolute bottom-0 w-full rounded-lg transition-all ${
+                        pct >= 90 ? "bg-rose-500" : pct >= 70 ? "bg-amber-500" : "bg-teal-500"
+                      }`}
+                      style={{ height: `${pct}%` }}
+                    />
+                  </div>
+                  <span className={`text-xs font-semibold ${isToday ? "text-teal-700" : "text-slate-500"}`}>
+                    {day.day}
+                  </span>
+                  {isToday && <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />}
+                </div>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-xs text-slate-400 text-center">
+            {dashboardData.weeklyTrend[0]?.occupied ?? 0} to {dashboardData.weeklyTrend[dashboardData.weeklyTrend.length - 1]?.occupied ?? 0} desks booked Mon–Fri
+          </p>
         </section>
       )}
 

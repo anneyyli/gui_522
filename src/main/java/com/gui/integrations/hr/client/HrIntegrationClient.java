@@ -14,11 +14,12 @@ public class HrIntegrationClient {
 
     private static final String HARDCODED_JSON = """
         [
-          {"id":"E001","name":"Alice Johnson","email":"alice@company.com","department":"Engineering","role":"Software Engineer"},
+          {"id":"E001","name":"Alice Johnson","email":"alice@company.com","department":"Engineering","role":"Manager"},
           {"id":"E002","name":"Bob Smith","email":"bob@company.com","department":"Design","role":"UX Designer"},
-          {"id":"E003","name":"Carol White","email":"carol@company.com","department":"Engineering","role":"Tech Lead"},
-          {"id":"E004","name":"Dan Brown","email":"dan@company.com","department":"Product","role":"Product Manager"},
-          {"id":"E005","name":"Eve Davis","email":"eve@company.com","department":"Engineering","role":"QA Engineer"}
+          {"id":"E003","name":"Charlie Brown","email":"charlie@company.com","department":"Engineering","role":"Software Engineer"},
+          {"id":"E004","name":"Diana Prince","email":"diana@company.com","department":"Product","role":"Product Manager"},
+          {"id":"E005","name":"Eve Adams","email":"eve@company.com","department":"Engineering","role":"QA Engineer"},
+          {"id":"E006","name":"Frank Miller","email":"frank@company.com","department":"HR","role":"HR Business Partner"}
         ]
         """;
 

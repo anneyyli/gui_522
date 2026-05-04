@@ -1,3 +1,10 @@
+/**
+ * Unified space booking page with tabbed navigation (Desks / Meeting Rooms).
+ * The tab state persists in the URL so refreshing or sharing the link preserves
+ * context. Optimistic UI updates are used for cancellation to keep the interface
+ * responsive: the booking disappears immediately and the floor plan tile reverts
+ * to "available" without waiting for a full re-fetch from the server.
+ */
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -33,6 +40,7 @@ export default function DeskBookingPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedDeskId, setSelectedDeskId] = useState<string | null>(null);
   const [booking, setBooking] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
@@ -94,6 +102,9 @@ export default function DeskBookingPage() {
     setBooking(true);
     try {
       await deskBookingApi.createBooking({ deskId: selectedDeskId, employeeId: user.employeeId, date });
+      const bookedLabel = desks.find(d => d.deskId === selectedDeskId)?.deskLabel ?? selectedDeskId;
+      setSuccessMessage(`Booked ${bookedLabel} for ${selectedDateLabel}`);
+      setTimeout(() => setSuccessMessage(null), 4000);
       setSelectedDeskId(null);
       setRefresh((c) => c + 1);
     } catch (err: unknown) {
@@ -179,6 +190,16 @@ export default function DeskBookingPage() {
         </button>
       </div>
 
+      {/* Success confirmation toast */}
+      {successMessage && (
+        <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 shadow-sm animate-in fade-in">
+          <svg className="h-5 w-5 flex-shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <p className="text-sm font-medium text-emerald-800">{successMessage}</p>
+        </div>
+      )}
+
       {/* Desks tab */}
       {tab === "desks" && (
         <>
@@ -203,6 +224,20 @@ export default function DeskBookingPage() {
               />
             </div>
           </section>
+
+          {percent >= 80 && (
+            <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm">
+              <svg className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+              </svg>
+              <div>
+                <p className="text-sm font-semibold text-amber-800">Near capacity</p>
+                <p className="text-sm text-amber-700">
+                  This floor is at {percent}% occupancy. Consider booking on a different floor or day to ensure availability.
+                </p>
+              </div>
+            </div>
+          )}
 
           {loading ? (
             <p className="text-center py-8 text-sm text-slate-500">Loading desks…</p>

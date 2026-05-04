@@ -1,33 +1,87 @@
+/**
+ * Team scheduling page — shows weekly attendance grid for colleagues.
+ * Supports custom saved views (up to 5) so users can quickly filter to
+ * specific subsets of colleagues they commonly coordinate with.
+ * Schedule data is fetched from the backend TeamScheduleService.
+ */
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import WeeklyScheduleGrid from "../components/WeeklyScheduleGrid";
 import { customViewsStorage, type CustomView } from "@/lib/customViewsStorage";
-import { getCurrentUser, type CurrentUser } from "@/lib/auth";
+import { getCurrentUser, getCurrentUserSession, type CurrentUser } from "@/lib/auth";
+import { teamSchedulingApi } from "@/features/team-scheduling/api";
+import { api } from "@/lib/apiClient";
 
-const EMPLOYEES = [
+interface EmployeeRow {
+  id: string;
+  name: string;
+  role: string;
+  days: string[];
+}
+
+const FALLBACK_EMPLOYEES: EmployeeRow[] = [
   { id: "E001", name: "Alice Johnson", role: "Manager", days: ["IN_OFFICE", "REMOTE", "IN_OFFICE", "IN_OFFICE", "OUT_OF_OFFICE"] },
   { id: "E002", name: "Bob Smith", role: "Engineer", days: ["REMOTE", "REMOTE", "IN_OFFICE", "PENDING", "IN_OFFICE"] },
-  { id: "E003", name: "Carol White", role: "Engineer", days: ["IN_OFFICE", "IN_OFFICE", "IN_OFFICE", "REMOTE", "REMOTE"] },
-  { id: "E004", name: "Dan Brown", role: "Product", days: ["PENDING", "REMOTE", "IN_OFFICE", "IN_OFFICE", "REMOTE"] },
-  { id: "E005", name: "Eve Davis", role: "QA", days: ["REMOTE", "IN_OFFICE", "PENDING", "IN_OFFICE", "OUT_OF_OFFICE"] },
+  { id: "E003", name: "Charlie Brown", role: "Engineer", days: ["IN_OFFICE", "IN_OFFICE", "IN_OFFICE", "REMOTE", "REMOTE"] },
+  { id: "E004", name: "Diana Prince", role: "Product", days: ["PENDING", "REMOTE", "IN_OFFICE", "IN_OFFICE", "REMOTE"] },
+  { id: "E005", name: "Eve Adams", role: "QA", days: ["REMOTE", "IN_OFFICE", "PENDING", "IN_OFFICE", "OUT_OF_OFFICE"] },
 ];
-
-const DEFAULT_VIEW = { id: "all", name: "All teammates", employeeIds: EMPLOYEES.map((emp) => emp.id) };
 
 export default function TeamSchedulingPage() {
   const router = useRouter();
   const [user, setUser] = useState<CurrentUser | null>(null);
+  const [employees, setEmployees] = useState<EmployeeRow[]>(FALLBACK_EMPLOYEES);
   const [views, setViews] = useState<CustomView[]>([]);
-  const [activeViewId, setActiveViewId] = useState(DEFAULT_VIEW.id);
+  const [activeViewId, setActiveViewId] = useState("all");
   const [newViewName, setNewViewName] = useState("");
-  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>(EMPLOYEES.map((emp) => emp.id));
+  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>(FALLBACK_EMPLOYEES.map((emp) => emp.id));
   const [isHydrated, setIsHydrated] = useState(false);
+
+  const DEFAULT_VIEW = useMemo(() => ({
+    id: "all", name: "All teammates", employeeIds: employees.map((emp) => emp.id)
+  }), [employees]);
 
   useEffect(() => {
     const currentUser = getCurrentUser();
     setUser(currentUser);
+
+    if (currentUser) {
+      getCurrentUserSession().then((verified) => {
+        if (!verified) return;
+        // Fetch the team week schedule from the backend
+        const today = new Date();
+        const monday = new Date(today);
+        monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+        const weekStart = monday.toISOString().slice(0, 10);
+
+        teamSchedulingApi.getTeamWeek(weekStart).then((data) => {
+          if (data.length > 0) {
+            const rows: EmployeeRow[] = [];
+            data.forEach(dept => {
+              dept.entries.forEach(entry => {
+                let existing = rows.find(r => r.id === entry.employeeId);
+                if (!existing) {
+                  existing = { id: entry.employeeId, name: entry.employeeName, role: dept.department, days: ["PENDING","PENDING","PENDING","PENDING","PENDING"] };
+                  rows.push(existing);
+                }
+                const dayOfWeek = new Date(entry.date).getDay();
+                const idx = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                if (idx < 5) {
+                  const modeMap: Record<string, string> = { OFFICE: "IN_OFFICE", REMOTE: "REMOTE", LEAVE: "OUT_OF_OFFICE" };
+                  existing.days[idx] = modeMap[entry.workMode] || "PENDING";
+                }
+              });
+            });
+            if (rows.length > 0) {
+              setEmployees(rows);
+              setSelectedEmployeeIds(rows.map(r => r.id));
+            }
+          }
+        }).catch(() => {});
+      });
+    }
 
     const stored = customViewsStorage.load();
     setViews(stored);
@@ -45,14 +99,15 @@ export default function TeamSchedulingPage() {
   const activeView = useMemo(() => {
     if (activeViewId === DEFAULT_VIEW.id) return DEFAULT_VIEW;
     return views.find((view) => view.id === activeViewId) ?? DEFAULT_VIEW;
-  }, [activeViewId, views]);
+  }, [activeViewId, views, DEFAULT_VIEW]);
 
   const displayRows = useMemo(
-    () => EMPLOYEES.filter((employee) => activeView.employeeIds.includes(employee.id)),
-    [activeView],
+    () => employees.filter((employee) => activeView.employeeIds.includes(employee.id)),
+    [activeView, employees],
   );
 
   const canSaveView = Boolean(user) && newViewName.trim().length > 0 && selectedEmployeeIds.length > 0 && views.length < 5;
+
 
   const toggleEmployeeSelection = (employeeId: string) => {
     setSelectedEmployeeIds((current) =>
@@ -172,7 +227,7 @@ export default function TeamSchedulingPage() {
               <div>
                 <p className="text-xs font-medium uppercase tracking-wide text-slate-600">Choose colleagues</p>
                 <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                  {EMPLOYEES.map((employee) => (
+                  {employees.map((employee) => (
                     <label key={employee.id} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm transition hover:border-teal-300">
                       <input
                         type="checkbox"

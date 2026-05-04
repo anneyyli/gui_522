@@ -18,29 +18,7 @@ public class DeskBookingRepository {
     private final File bookingsFile = new File("bookings.json");
 
     public DeskBookingRepository() {
-        // Load existing bookings from JSON if file exists
         loadFromFile();
-
-        // Add some default bookings if empty
-        if (store.isEmpty()) {
-            DeskBooking booking1 = new DeskBooking();
-            booking1.setId("B001");
-            booking1.setDeskId("D001");
-            booking1.setEmployeeId("E001");
-            booking1.setDate(LocalDate.now().plusDays(1));
-            booking1.setStatus(DeskBooking.BookingStatus.CONFIRMED);
-
-            DeskBooking booking2 = new DeskBooking();
-            booking2.setId("B002");
-            booking2.setDeskId("D002");
-            booking2.setEmployeeId("E002");
-            booking2.setDate(LocalDate.now().plusDays(2));
-            booking2.setStatus(DeskBooking.BookingStatus.CONFIRMED);
-
-            store.put(booking1.getId(), booking1);
-            store.put(booking2.getId(), booking2);
-            saveToFile();
-        }
     }
 
     private void loadFromFile() {

@@ -1,3 +1,10 @@
+/**
+ * Gradient-coloured occupancy card that shifts from teal (comfortable) through
+ * amber (busy) to rose (near-full). This traffic-light metaphor was chosen so
+ * users can assess capacity at a glance without reading numbers. The percentage
+ * and text labels ensure the information is still accessible without relying on
+ * colour perception alone (WCAG guideline 1.4.1 — Use of Colour).
+ */
 type Props = {
   occupied: number;
   total: number;

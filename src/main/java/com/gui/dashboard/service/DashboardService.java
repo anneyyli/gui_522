@@ -14,8 +14,18 @@ import com.gui.deskBooking.repository.DeskBookingRepository;
 import com.gui.integrations.office.client.OfficeIntegrationClient;
 import com.gui.roomBooking.repository.RoomBookingRepository;
 import com.gui.roomBooking.repository.RoomRepository;
+import com.gui.teamScheduling.domain.TeamSchedule;
+import com.gui.teamScheduling.repository.TeamScheduleRepository;
 import org.springframework.stereotype.Service;
 
+/**
+ * Builds role-specific dashboard views following the privacy-by-design principle:
+ * - Managers see their direct reports' attendance and team desk usage
+ * - Team members see only team-level schedule and their own bookings
+ * - HR sees anonymised, organisation-wide occupancy data and capacity alerts
+ * This separation was introduced after stakeholder feedback that an all-in-one
+ * dashboard felt cluttered and exposed unnecessary personal data.
+ */
 @Service
 public class DashboardService {
 
@@ -24,13 +34,16 @@ public class DashboardService {
     private final OfficeIntegrationClient officeClient;
     private final RoomRepository roomRepository;
     private final RoomBookingRepository roomBookingRepository;
+    private final TeamScheduleRepository scheduleRepository;
 
     public DashboardService(DeskBookingRepository bookingRepository, OfficeIntegrationClient officeClient,
-                            RoomRepository roomRepository, RoomBookingRepository roomBookingRepository) {
+                            RoomRepository roomRepository, RoomBookingRepository roomBookingRepository,
+                            TeamScheduleRepository scheduleRepository) {
         this.bookingRepository = bookingRepository;
         this.officeClient = officeClient;
         this.roomRepository = roomRepository;
         this.roomBookingRepository = roomBookingRepository;
+        this.scheduleRepository = scheduleRepository;
     }
 
     public DashboardResponse getDashboard(String employeeId) {
@@ -62,8 +75,9 @@ public class DashboardService {
             response.setTeamAttendanceCharts(getTeamAttendanceCharts(employeeId));
             response.setDirectReportsGantt(getDirectReportsGantt(employeeId));
         } else if ("HR".equals(role)) {
-            // For HR, add company-wide attendance summary
+            // For HR, add company-wide attendance summary and weekly trend data
             response.setHrAttendanceSummary(getHrAttendanceSummary());
+            response.setWeeklyTrend(getWeeklyOccupancyTrend());
         }
 
         // Build team schedule from calendar system
@@ -123,33 +137,29 @@ public class DashboardService {
 
     private Map<String, Object> getTeamAttendanceCharts(String managerId) {
         List<String> directReports = getDirectReports(managerId);
+        LocalDate today = LocalDate.now();
 
-        // Calculate attendance from team schedule data
         int officeCount = 0;
         int wfhCount = 0;
         int oooCount = 0;
 
-        // Mock team schedule data - in real app, this would come from a proper attendance system
-        List<Map<String, Object>> teamSchedule = List.of(
-            Map.of("name", "Charlie Brown", "days", List.of("IN_OFFICE", "IN_OFFICE", "REMOTE", "IN_OFFICE", "REMOTE")),
-            Map.of("name", "Diana Prince", "days", List.of("IN_OFFICE", "REMOTE", "IN_OFFICE", "OOO", "IN_OFFICE")),
-            Map.of("name", "Eve Adams", "days", List.of("REMOTE", "REMOTE", "IN_OFFICE", "IN_OFFICE", "OOO"))
-        );
-
-        for (Map<String, Object> member : teamSchedule) {
-            @SuppressWarnings("unchecked")
-            List<String> days = (List<String>) member.get("days");
-            for (String day : days) {
-                switch (day) {
-                    case "IN_OFFICE" -> officeCount++;
-                    case "REMOTE" -> wfhCount++;
-                    case "OUT_OF_OFFICE", "OOO" -> oooCount++;
+        for (String reportId : directReports) {
+            List<TeamSchedule> todaySchedule = scheduleRepository.findByEmployeeId(reportId).stream()
+                    .filter(s -> s.getDate().equals(today))
+                    .toList();
+            if (todaySchedule.isEmpty()) {
+                officeCount++;
+            } else {
+                switch (todaySchedule.get(0).getWorkMode()) {
+                    case OFFICE -> officeCount++;
+                    case REMOTE -> wfhCount++;
+                    case LEAVE -> oooCount++;
                 }
             }
         }
 
         return Map.of(
-            "officeAttendance", List.of(officeCount), // Single value for pie chart
+            "officeAttendance", List.of(officeCount),
             "wfh", List.of(wfhCount),
             "ooo", List.of(oooCount)
         );
@@ -157,14 +167,59 @@ public class DashboardService {
 
     private Map<String, Object> getDirectReportsGantt(String managerId) {
         List<String> directReports = getDirectReports(managerId);
-        // Return actual direct reports with their schedules
+        LocalDate today = LocalDate.now();
+        LocalDate weekStart = today.with(java.time.DayOfWeek.MONDAY);
+
         return Map.of(
-            "reports", directReports.stream().map(reportId -> Map.of(
-                "employeeId", reportId,
-                "name", getUserName(reportId),
-                "schedule", List.of("IN_OFFICE", "REMOTE", "IN_OFFICE", "OOO", "IN_OFFICE")
-            )).collect(Collectors.toList())
+            "reports", directReports.stream().map(reportId -> {
+                List<String> schedule = new ArrayList<>();
+                for (int i = 0; i < 5; i++) {
+                    LocalDate day = weekStart.plusDays(i);
+                    List<TeamSchedule> entries = scheduleRepository.findByEmployeeId(reportId).stream()
+                            .filter(s -> s.getDate().equals(day))
+                            .toList();
+                    if (entries.isEmpty()) {
+                        schedule.add("PENDING");
+                    } else {
+                        switch (entries.get(0).getWorkMode()) {
+                            case OFFICE -> schedule.add("IN_OFFICE");
+                            case REMOTE -> schedule.add("REMOTE");
+                            case LEAVE -> schedule.add("OOO");
+                        }
+                    }
+                }
+                return Map.of(
+                    "employeeId", reportId,
+                    "name", getUserName(reportId),
+                    "schedule", schedule
+                );
+            }).collect(Collectors.toList())
         );
+    }
+
+    /**
+     * Returns desk occupancy for each day of the current week (Mon-Fri).
+     * Gives HR a trend view to identify peak days and plan capacity accordingly.
+     */
+    private List<Map<String, Object>> getWeeklyOccupancyTrend() {
+        LocalDate today = LocalDate.now();
+        LocalDate weekStart = today.with(java.time.DayOfWeek.MONDAY);
+        int totalDesks = officeClient.getAllDesks().size();
+
+        List<Map<String, Object>> trend = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            LocalDate day = weekStart.plusDays(i);
+            int booked = (int) bookingRepository.findByDate(day).stream()
+                    .filter(b -> b.getStatus() == com.gui.deskBooking.domain.DeskBooking.BookingStatus.CONFIRMED)
+                    .count();
+            trend.add(Map.of(
+                "day", day.getDayOfWeek().toString().substring(0, 3),
+                "date", day.toString(),
+                "occupied", booked,
+                "total", totalDesks
+            ));
+        }
+        return trend;
     }
 
     private List<String> getDirectReports(String managerId) {
