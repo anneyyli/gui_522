@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import HelpPanel from "./components/HelpPanel";
 
 export const metadata: Metadata = {
   title: "HybridWork",
@@ -12,11 +13,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="bg-gray-50 min-h-screen">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-teal-600 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white focus:shadow-lg"
+        >
+          Skip to main content
+        </a>
         <Sidebar />
         <div className="pl-56">
           <Navbar />
-          <main className="max-w-6xl mx-auto px-6 py-8">{children}</main>
+          <main id="main-content" className="max-w-6xl mx-auto px-6 py-8">{children}</main>
         </div>
+        <HelpPanel />
       </body>
     </html>
   );

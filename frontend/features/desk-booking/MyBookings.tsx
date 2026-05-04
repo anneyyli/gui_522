@@ -24,6 +24,7 @@ export default function MyBookings({ employeeId, refresh, onCancelled, onRoomCan
   const [deskBookings, setDeskBookings] = useState<BookingResponse[]>([]);
   const [roomBookings, setRoomBookings] = useState<RoomBookingResponse[]>([]);
   const [cancelling, setCancelling] = useState<string | null>(null);
+  const [confirmCancel, setConfirmCancel] = useState<{ type: "desk"; booking: BookingResponse } | { type: "room"; id: string; label: string } | null>(null);
 
   useEffect(() => {
     deskBookingApi.getMyBookings(employeeId).then(setDeskBookings);
@@ -65,8 +66,43 @@ export default function MyBookings({ employeeId, refresh, onCancelled, onRoomCan
     return <p className="text-slate-400 text-sm py-4">No upcoming bookings.</p>;
   }
 
+  const handleConfirmAction = () => {
+    if (!confirmCancel) return;
+    if (confirmCancel.type === "desk") {
+      handleCancelDesk(confirmCancel.booking);
+    } else {
+      handleCancelRoom(confirmCancel.id);
+    }
+    setConfirmCancel(null);
+  };
+
   return (
     <div className="space-y-2">
+      {confirmCancel && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3" role="alertdialog" aria-labelledby="cancel-confirm-title">
+          <p id="cancel-confirm-title" className="text-sm font-medium text-amber-900">
+            Cancel this {confirmCancel.type === "desk" ? "desk" : "room"} booking?
+          </p>
+          <p className="mt-0.5 text-xs text-amber-700">This action cannot be undone.</p>
+          <div className="mt-2 flex gap-2">
+            <button
+              type="button"
+              onClick={handleConfirmAction}
+              className="rounded-md bg-rose-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-rose-700"
+            >
+              Yes, cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirmCancel(null)}
+              className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+            >
+              Keep booking
+            </button>
+          </div>
+        </div>
+      )}
+
       {activeDesks.map(b => (
         <div key={b.id} className="flex items-center justify-between border border-slate-200 rounded-lg px-4 py-3">
           <div className="flex items-center gap-3">
@@ -81,7 +117,7 @@ export default function MyBookings({ employeeId, refresh, onCancelled, onRoomCan
             </div>
           </div>
           <button
-            onClick={() => handleCancelDesk(b)}
+            onClick={() => setConfirmCancel({ type: "desk", booking: b })}
             disabled={cancelling === b.id}
             className="text-xs text-rose-500 hover:text-rose-700 font-medium transition-colors disabled:opacity-50"
           >
@@ -104,7 +140,7 @@ export default function MyBookings({ employeeId, refresh, onCancelled, onRoomCan
             </div>
           </div>
           <button
-            onClick={() => handleCancelRoom(b.id)}
+            onClick={() => setConfirmCancel({ type: "room", id: b.id, label: b.roomName })}
             disabled={cancelling === b.id}
             className="text-xs text-rose-500 hover:text-rose-700 font-medium transition-colors disabled:opacity-50"
           >

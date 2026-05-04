@@ -7,7 +7,7 @@
  */
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import FloorPlan from "../components/FloorPlan";
 import DeskDetailsPanel from "../components/DeskDetailsPanel";
@@ -22,6 +22,14 @@ const TODAY = new Date().toISOString().slice(0, 10);
 type Tab = "desks" | "rooms";
 
 export default function DeskBookingPage() {
+  return (
+    <Suspense fallback={<p className="text-center py-20 text-sm text-slate-500">Loading…</p>}>
+      <DeskBookingContent />
+    </Suspense>
+  );
+}
+
+function DeskBookingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialTab = searchParams.get("tab") === "rooms" ? "rooms" : "desks";
@@ -108,7 +116,7 @@ export default function DeskBookingPage() {
       setSelectedDeskId(null);
       setRefresh((c) => c + 1);
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "Unable to create booking.");
+      setError(err instanceof Error ? err.message : "Unable to create booking.");
     } finally {
       setBooking(false);
     }
@@ -141,9 +149,10 @@ export default function DeskBookingPage() {
           <p className="mt-1 text-sm text-slate-500">Book desks and meeting rooms for the day.</p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
-          <div className="font-medium text-slate-900">Date</div>
+          <label htmlFor="booking-date" className="block font-medium text-slate-900">Date</label>
           <div className="mt-1">
             <input
+              id="booking-date"
               type="date"
               value={date}
               onChange={(event) => setDate(event.target.value)}
@@ -191,14 +200,16 @@ export default function DeskBookingPage() {
       </div>
 
       {/* Success confirmation toast */}
-      {successMessage && (
-        <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 shadow-sm animate-in fade-in">
-          <svg className="h-5 w-5 flex-shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-          </svg>
-          <p className="text-sm font-medium text-emerald-800">{successMessage}</p>
-        </div>
-      )}
+      <div role="status" aria-live="polite">
+        {successMessage && (
+          <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 shadow-sm animate-in fade-in">
+            <svg className="h-5 w-5 flex-shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            <p className="text-sm font-medium text-emerald-800">{successMessage}</p>
+          </div>
+        )}
+      </div>
 
       {/* Desks tab */}
       {tab === "desks" && (
@@ -242,7 +253,7 @@ export default function DeskBookingPage() {
           {loading ? (
             <p className="text-center py-8 text-sm text-slate-500">Loading desks…</p>
           ) : error ? (
-            <p className="text-center py-8 text-sm text-rose-600">{error}</p>
+            <p role="alert" aria-live="assertive" className="text-center py-8 text-sm text-rose-600">{error}</p>
           ) : (
             <div className="grid gap-6 xl:grid-cols-[1.4fr_0.6fr]">
               <FloorPlan

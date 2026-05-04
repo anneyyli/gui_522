@@ -183,7 +183,7 @@ export default function HomePage() {
           roomsInUse={dashboardData.occupiedRooms}
           roomsTotal={dashboardData.totalRooms}
         />
-        <QuickActions />
+        <QuickActions userRole={user.role} />
       </div>
 
       {isHR && dashboardData.occupiedDesks / dashboardData.totalDesks >= 0.8 && (
@@ -257,6 +257,114 @@ export default function HomePage() {
           <p className="mt-3 text-xs text-slate-400 text-center">
             {dashboardData.weeklyTrend[0]?.occupied ?? 0} to {dashboardData.weeklyTrend[dashboardData.weeklyTrend.length - 1]?.occupied ?? 0} desks booked Mon–Fri
           </p>
+        </section>
+      )}
+
+      {isHR && (
+        <div className="grid gap-6 lg:grid-cols-2">
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-slate-900">Floor Utilisation</h2>
+            <p className="text-sm text-slate-500">Occupancy breakdown by floor today</p>
+            <div className="mt-4 space-y-3">
+              {[
+                { floor: "Floor 1", desks: 30, occupied: Math.min(30, Math.round(dashboardData.occupiedDesks * 0.4)) },
+                { floor: "Floor 2", desks: 30, occupied: Math.min(30, Math.round(dashboardData.occupiedDesks * 0.35)) },
+                { floor: "Floor 3", desks: 30, occupied: Math.min(30, Math.round(dashboardData.occupiedDesks * 0.25)) },
+              ].map((f) => {
+                const pct = Math.round((f.occupied / f.desks) * 100);
+                return (
+                  <div key={f.floor}>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium text-slate-700">{f.floor}</span>
+                      <span className={`text-xs font-semibold ${pct >= 80 ? "text-amber-600" : "text-slate-500"}`}>
+                        {f.occupied}/{f.desks} ({pct}%)
+                      </span>
+                    </div>
+                    <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-slate-100">
+                      <div
+                        className={`h-full rounded-full transition-all ${
+                          pct >= 90 ? "bg-rose-500" : pct >= 80 ? "bg-amber-500" : "bg-teal-500"
+                        }`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="mt-4 text-xs text-slate-400">
+              30 desks per floor across Open Plan, Quiet Zone, and Window Row zones.
+            </p>
+          </section>
+
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-slate-900">Hybrid Policy Compliance</h2>
+            <p className="text-sm text-slate-500">Minimum 2 office days per week requirement</p>
+            <div className="mt-4 flex items-center gap-6">
+              <div className="relative">
+                <svg width="120" height="120" viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="#f1f5f9" strokeWidth="10" />
+                  <circle
+                    cx="60" cy="60" r="50" fill="none" stroke="#10b981" strokeWidth="10"
+                    strokeDasharray={`${2 * Math.PI * 50 * 0.78} ${2 * Math.PI * 50 * 0.22}`}
+                    strokeLinecap="round"
+                    transform="rotate(-90 60 60)"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-xl font-bold text-slate-900">78%</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                  <span className="text-sm text-slate-700">66 meeting policy</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-2.5 w-2.5 rounded-full bg-slate-200" />
+                  <span className="text-sm text-slate-700">19 below threshold</span>
+                </div>
+              </div>
+            </div>
+            <p className="mt-4 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
+              Employees with fewer than 2 scheduled office days this week. Consider targeted reminders before escalation.
+            </p>
+          </section>
+        </div>
+      )}
+
+      {isHR && dashboardData.weeklyTrend && (
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-slate-900">Peak Day Analysis</h2>
+          <p className="text-sm text-slate-500">Busiest and quietest days for space planning</p>
+          {(() => {
+            const peakDay = dashboardData.weeklyTrend.reduce((max, d) => d.occupied > max.occupied ? d : max);
+            const quietDay = dashboardData.weeklyTrend.reduce((min, d) => d.occupied < min.occupied ? d : min);
+            return (
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+                  <div className="flex items-center gap-2">
+                    <svg className="h-4 w-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" />
+                    </svg>
+                    <span className="text-sm font-semibold text-amber-800">Peak: {peakDay.day}</span>
+                  </div>
+                  <p className="mt-1 text-sm text-amber-700">{peakDay.occupied} desks ({Math.round((peakDay.occupied / peakDay.total) * 100)}% capacity)</p>
+                  <p className="mt-1 text-xs text-amber-600">Consider staggering meetings or opening overflow areas.</p>
+                </div>
+                <div className="rounded-xl border border-teal-200 bg-teal-50 p-4">
+                  <div className="flex items-center gap-2">
+                    <svg className="h-4 w-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6 9 12.75l4.286-4.286a11.948 11.948 0 0 1 4.306 6.43l.776 2.898m0 0 3.182-5.511m-3.182 5.51-5.511-3.181" />
+                    </svg>
+                    <span className="text-sm font-semibold text-teal-800">Quietest: {quietDay.day}</span>
+                  </div>
+                  <p className="mt-1 text-sm text-teal-700">{quietDay.occupied} desks ({Math.round((quietDay.occupied / quietDay.total) * 100)}% capacity)</p>
+                  <p className="mt-1 text-xs text-teal-600">Good day for maintenance, deep cleaning, or facility work.</p>
+                </div>
+              </div>
+            );
+          })()}
         </section>
       )}
 

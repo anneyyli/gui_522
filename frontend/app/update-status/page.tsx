@@ -41,6 +41,7 @@ export default function UpdateStatusPage() {
   const [schedule, setSchedule] = useState<Record<string, ScheduleEntry["workMode"] | null>>({});
   const [saving, setSaving] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const weekDates = getWeekDates();
 
@@ -79,7 +80,8 @@ export default function UpdateStatusPage() {
       setConfirmationMessage(`Status updated: ${formatDay(date)} set to "${label}"`);
       setTimeout(() => { setSaved(null); setConfirmationMessage(null); }, 4000);
     } catch {
-      alert("Failed to update status.");
+      setConfirmationMessage(null);
+      setError("Failed to update status. Please try again.");
     } finally {
       setSaving(null);
     }
@@ -98,11 +100,23 @@ export default function UpdateStatusPage() {
       </div>
 
       {confirmationMessage && (
-        <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 shadow-sm">
+        <div role="status" aria-live="polite" className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 shadow-sm">
           <svg className="h-5 w-5 flex-shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
           </svg>
           <p className="text-sm font-medium text-emerald-800">{confirmationMessage}</p>
+        </div>
+      )}
+
+      {error && (
+        <div role="alert" className="flex items-center gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 shadow-sm">
+          <svg className="h-5 w-5 flex-shrink-0 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9.303 3.376c-.866 1.5.217 3.374 1.948 3.374H2.697c-1.73 0-2.813-1.874-1.948-3.374L10.051 3.378c.866-1.5 3.032-1.5 3.898 0L22.303 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+          </svg>
+          <p className="text-sm font-medium text-rose-800">{error}</p>
+          <button type="button" onClick={() => setError(null)} className="ml-auto text-rose-400 hover:text-rose-600">
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+          </button>
         </div>
       )}
 
