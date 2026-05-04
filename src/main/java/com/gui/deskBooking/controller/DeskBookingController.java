@@ -4,7 +4,6 @@ import com.gui.deskBooking.dto.BookingResponse;
 import com.gui.deskBooking.dto.CreateBookingRequest;
 import com.gui.deskBooking.dto.DeskAvailabilityResponse;
 import com.gui.deskBooking.service.ReservationService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,10 +19,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/desk-booking")
-@RequiredArgsConstructor
 public class DeskBookingController {
 
     private final ReservationService reservationService;
+
+    public DeskBookingController(ReservationService reservationService) {
+        this.reservationService = reservationService;
+    }
 
     @GetMapping("/availability")
     public List<DeskAvailabilityResponse> getAvailability(

@@ -4,13 +4,44 @@
     "employeeId": "E001",
     "email": "alice@company.com",
     "password": "password123",
-    "name": "Alice Johnson"
+    "name": "Alice Johnson",
+    "role": "MANAGER",
+    "reportsTo": null
   },
   {
     "id": "U002",
     "employeeId": "E002",
     "email": "bob@company.com",
     "password": "password123",
-    "name": "Bob Smith"
+    "name": "Bob Smith",
+    "role": "TEAM_MEMBER",
+    "reportsTo": null
+  },
+  {
+    "id": "U003",
+    "employeeId": "E003",
+    "email": "charlie@company.com",
+    "password": "password123",
+    "name": "Charlie Brown",
+    "role": "TEAM_MEMBER",
+    "reportsTo": "E001"
+  },
+  {
+    "id": "U004",
+    "employeeId": "E004",
+    "email": "diana@company.com",
+    "password": "password123",
+    "name": "Diana Prince",
+    "role": "TEAM_MEMBER",
+    "reportsTo": "E001"
+  },
+  {
+    "id": "U005",
+    "employeeId": "E005",
+    "email": "eve@company.com",
+    "password": "password123",
+    "name": "Eve Adams",
+    "role": "TEAM_MEMBER",
+    "reportsTo": null
   }
 ]

@@ -31,7 +31,7 @@ public class JsonUserDetailsService implements UserDetailsService {
             return User.builder()
                 .username((String) user.get("employeeId"))
                 .password((String) user.get("password"))
-                .roles("USER")
+                .roles((String) user.get("role"))
                 .build();
         } catch (Exception e) {
             throw new UsernameNotFoundException("User not found: " + employeeId, e);

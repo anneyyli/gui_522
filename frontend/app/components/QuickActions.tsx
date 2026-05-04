@@ -9,9 +9,6 @@ export default function QuickActions() {
       </p>
 
       <div className="mt-5 grid gap-3">
-        <button className="rounded-xl bg-slate-900 px-4 py-3 text-left text-sm font-medium text-white">
-          Plan Team Day
-        </button>
         <Link
           href="/desk-booking"
           className="rounded-xl bg-teal-600 px-4 py-3 text-sm font-medium text-white"
@@ -22,7 +19,7 @@ export default function QuickActions() {
           href="/team-scheduling"
           className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700"
         >
-          Update Status
+          View Status
         </Link>
       </div>
     </section>

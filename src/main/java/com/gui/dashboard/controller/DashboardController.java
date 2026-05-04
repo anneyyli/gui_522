@@ -1,5 +1,6 @@
 package com.gui.dashboard.controller;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.gui.dashboard.dto.DashboardResponse;
@@ -17,7 +18,8 @@ public class DashboardController {
     }
 
     @GetMapping("/team-overview")
-    public DashboardResponse getTeamOverview() {
-        return dashboardService.getDashboard();
+    public DashboardResponse getTeamOverview(Authentication authentication) {
+        String employeeId = authentication.getName();
+        return dashboardService.getDashboard(employeeId);
     }
 }

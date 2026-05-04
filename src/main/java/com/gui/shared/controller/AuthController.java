@@ -58,7 +58,8 @@ public class AuthController {
                 return ResponseEntity.ok(Map.of(
                     "employeeId", user.get("employeeId"),
                     "name", user.get("name"),
-                    "email", user.get("email")
+                    "email", user.get("email"),
+                    "role", user.get("role")
                 ));
             } else {
                 return ResponseEntity.status(401).body(Map.of("message", "Invalid credentials"));
@@ -97,7 +98,8 @@ public class AuthController {
                     return ResponseEntity.ok(Map.of(
                         "employeeId", user.get("employeeId"),
                         "name", user.get("name"),
-                        "email", user.get("email")
+                        "email", user.get("email"),
+                        "role", user.get("role")
                     ));
                 }
             } catch (Exception e) {

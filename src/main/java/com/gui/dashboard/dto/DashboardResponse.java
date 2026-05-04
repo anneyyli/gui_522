@@ -1,6 +1,7 @@
 package com.gui.dashboard.dto;
 
 import java.util.List;
+import java.util.Map;
 
 public class DashboardResponse {
     private int occupiedDesks;
@@ -10,6 +11,8 @@ public class DashboardResponse {
     private String site;
     private String floor;
     private List<WeeklyScheduleRowResponse> teamSchedule;
+    private Map<String, Object> teamAttendanceCharts;
+    private Map<String, Object> directReportsGantt;
 
     public int getOccupiedDesks() { return occupiedDesks; }
     public void setOccupiedDesks(int occupiedDesks) { this.occupiedDesks = occupiedDesks; }
@@ -31,5 +34,11 @@ public class DashboardResponse {
 
     public List<WeeklyScheduleRowResponse> getTeamSchedule() { return teamSchedule; }
     public void setTeamSchedule(List<WeeklyScheduleRowResponse> teamSchedule) { this.teamSchedule = teamSchedule; }
+
+    public Map<String, Object> getTeamAttendanceCharts() { return teamAttendanceCharts; }
+    public void setTeamAttendanceCharts(Map<String, Object> teamAttendanceCharts) { this.teamAttendanceCharts = teamAttendanceCharts; }
+
+    public Map<String, Object> getDirectReportsGantt() { return directReportsGantt; }
+    public void setDirectReportsGantt(Map<String, Object> directReportsGantt) { this.directReportsGantt = directReportsGantt; }
 
 }

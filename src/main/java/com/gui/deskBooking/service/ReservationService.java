@@ -1,5 +1,6 @@
 package com.gui.deskBooking.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gui.deskBooking.domain.DeskBooking;
 import com.gui.deskBooking.dto.BookingResponse;
 import com.gui.deskBooking.dto.CreateBookingRequest;
@@ -12,6 +13,10 @@ import com.gui.shared.exception.BadRequestException;
 import com.gui.shared.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +28,7 @@ public class ReservationService {
     private final OfficeIntegrationClient officeClient;
     private final HrIntegrationClient hrClient;
     private final DeskBookingMapper mapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ReservationService(DeskBookingRepository bookingRepository, OfficeIntegrationClient officeClient, HrIntegrationClient hrClient, DeskBookingMapper mapper) {
         this.bookingRepository = bookingRepository;
@@ -32,10 +38,23 @@ public class ReservationService {
     }
 
     public BookingResponse createBooking(CreateBookingRequest request) {
+        // Check if desk is already booked
         boolean alreadyBooked = bookingRepository.findByDate(request.getDate()).stream()
                 .anyMatch(b -> b.getDeskId().equals(request.getDeskId())
                         && b.getStatus() == DeskBooking.BookingStatus.CONFIRMED);
         if (alreadyBooked) throw new BadRequestException("Desk is already booked for this date.");
+
+        // Check user role and existing bookings
+        String role = getUserRole(request.getEmployeeId());
+        if (!"MANAGER".equals(role)) {
+            // Team members can only book one desk per day
+            List<DeskBooking> userBookings = bookingRepository.findByEmployeeId(request.getEmployeeId()).stream()
+                    .filter(b -> b.getDate().equals(request.getDate()) && b.getStatus() == DeskBooking.BookingStatus.CONFIRMED)
+                    .toList();
+            if (!userBookings.isEmpty()) {
+                throw new BadRequestException("You can only book one desk per day.");
+            }
+        }
 
         DeskBooking booking = new DeskBooking();
         booking.setId(UUID.randomUUID().toString());
@@ -89,5 +108,21 @@ public class ReservationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found: " + bookingId));
         booking.setStatus(DeskBooking.BookingStatus.CANCELLED);
         bookingRepository.save(booking);
+    }
+
+    private String getUserRole(String employeeId) {
+        try {
+            File usersFile = new File("users.json");
+            List<Map<String, Object>> users = objectMapper.readValue(usersFile,
+                objectMapper.getTypeFactory().constructCollectionType(List.class, Map.class));
+
+            return users.stream()
+                .filter(u -> employeeId.equals(u.get("employeeId")))
+                .map(u -> (String) u.get("role"))
+                .findFirst()
+                .orElse("TEAM_MEMBER"); // Default to team member
+        } catch (Exception e) {
+            return "TEAM_MEMBER"; // Default on error
+        }
     }
 }

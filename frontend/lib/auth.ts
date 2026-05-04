@@ -4,6 +4,7 @@ export type CurrentUser = {
   employeeId: string;
   name: string;
   email: string;
+  role: string;
 };
 
 const STORAGE_KEY = "hybridwork-current-user";
