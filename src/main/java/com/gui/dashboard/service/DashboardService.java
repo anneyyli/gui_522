@@ -78,6 +78,7 @@ public class DashboardService {
             // For HR, add company-wide attendance summary and weekly trend data
             response.setHrAttendanceSummary(getHrAttendanceSummary());
             response.setWeeklyTrend(getWeeklyOccupancyTrend());
+            response.setFloorUtilisation(getFloorUtilisation(today));
         }
 
         // Build team schedule from calendar system
@@ -235,6 +236,34 @@ public class DashboardService {
         } catch (Exception e) {
             return List.of();
         }
+    }
+
+    private List<Map<String, Object>> getFloorUtilisation(LocalDate date) {
+        var allDesks = officeClient.getAllDesks();
+        List<DeskBooking> todaysBookings = bookingRepository.findByDate(date).stream()
+                .filter(b -> b.getStatus() == DeskBooking.BookingStatus.CONFIRMED)
+                .toList();
+
+        var bookedDeskIds = todaysBookings.stream()
+                .map(DeskBooking::getDeskId)
+                .collect(Collectors.toSet());
+
+        Map<String, Long> totalByFloor = allDesks.stream()
+                .collect(Collectors.groupingBy(com.gui.integrations.office.dto.DeskDto::getFloor, Collectors.counting()));
+        Map<String, Long> occupiedByFloor = allDesks.stream()
+                .filter(d -> bookedDeskIds.contains(d.getId()))
+                .collect(Collectors.groupingBy(com.gui.integrations.office.dto.DeskDto::getFloor, Collectors.counting()));
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        totalByFloor.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> {
+                    String floor = entry.getKey();
+                    int total = entry.getValue().intValue();
+                    int occupied = occupiedByFloor.getOrDefault(floor, 0L).intValue();
+                    result.add(Map.of("floor", "Floor " + floor, "desks", total, "occupied", occupied));
+                });
+        return result;
     }
 
     private Map<String, Object> getHrAttendanceSummary() {

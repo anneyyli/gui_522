@@ -12,7 +12,6 @@ import WeeklyScheduleGrid from "../components/WeeklyScheduleGrid";
 import { customViewsStorage, type CustomView } from "@/lib/customViewsStorage";
 import { getCurrentUser, getCurrentUserSession, type CurrentUser } from "@/lib/auth";
 import { teamSchedulingApi } from "@/features/team-scheduling/api";
-import { api } from "@/lib/apiClient";
 
 interface EmployeeRow {
   id: string;
@@ -21,22 +20,16 @@ interface EmployeeRow {
   days: string[];
 }
 
-const FALLBACK_EMPLOYEES: EmployeeRow[] = [
-  { id: "E001", name: "Alice Johnson", role: "Manager", days: ["IN_OFFICE", "REMOTE", "IN_OFFICE", "IN_OFFICE", "OUT_OF_OFFICE"] },
-  { id: "E002", name: "Bob Smith", role: "Engineer", days: ["REMOTE", "REMOTE", "IN_OFFICE", "PENDING", "IN_OFFICE"] },
-  { id: "E003", name: "Charlie Brown", role: "Engineer", days: ["IN_OFFICE", "IN_OFFICE", "IN_OFFICE", "REMOTE", "REMOTE"] },
-  { id: "E004", name: "Diana Prince", role: "Product", days: ["PENDING", "REMOTE", "IN_OFFICE", "IN_OFFICE", "REMOTE"] },
-  { id: "E005", name: "Eve Adams", role: "QA", days: ["REMOTE", "IN_OFFICE", "PENDING", "IN_OFFICE", "OUT_OF_OFFICE"] },
-];
 
 export default function TeamSchedulingPage() {
   const router = useRouter();
   const [user, setUser] = useState<CurrentUser | null>(null);
-  const [employees, setEmployees] = useState<EmployeeRow[]>(FALLBACK_EMPLOYEES);
+  const [employees, setEmployees] = useState<EmployeeRow[]>([]);
   const [views, setViews] = useState<CustomView[]>([]);
   const [activeViewId, setActiveViewId] = useState("all");
   const [newViewName, setNewViewName] = useState("");
-  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>(FALLBACK_EMPLOYEES.map((emp) => emp.id));
+  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
+  const [loadingSchedule, setLoadingSchedule] = useState(true);
   const [isHydrated, setIsHydrated] = useState(false);
 
   const DEFAULT_VIEW = useMemo(() => ({
@@ -57,29 +50,25 @@ export default function TeamSchedulingPage() {
         const weekStart = monday.toISOString().slice(0, 10);
 
         teamSchedulingApi.getTeamWeek(weekStart).then((data) => {
-          if (data.length > 0) {
-            const rows: EmployeeRow[] = [];
-            data.forEach(dept => {
-              dept.entries.forEach(entry => {
-                let existing = rows.find(r => r.id === entry.employeeId);
-                if (!existing) {
-                  existing = { id: entry.employeeId, name: entry.employeeName, role: dept.department, days: ["PENDING","PENDING","PENDING","PENDING","PENDING"] };
-                  rows.push(existing);
-                }
-                const dayOfWeek = new Date(entry.date).getDay();
-                const idx = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-                if (idx < 5) {
-                  const modeMap: Record<string, string> = { OFFICE: "IN_OFFICE", REMOTE: "REMOTE", LEAVE: "OUT_OF_OFFICE" };
-                  existing.days[idx] = modeMap[entry.workMode] || "PENDING";
-                }
-              });
+          const rows: EmployeeRow[] = [];
+          data.forEach(dept => {
+            dept.entries.forEach(entry => {
+              let existing = rows.find(r => r.id === entry.employeeId);
+              if (!existing) {
+                existing = { id: entry.employeeId, name: entry.employeeName, role: dept.department, days: ["PENDING","PENDING","PENDING","PENDING","PENDING"] };
+                rows.push(existing);
+              }
+              const dayOfWeek = new Date(entry.date).getDay();
+              const idx = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+              if (idx < 5) {
+                const modeMap: Record<string, string> = { OFFICE: "IN_OFFICE", REMOTE: "REMOTE", LEAVE: "OUT_OF_OFFICE" };
+                existing.days[idx] = modeMap[entry.workMode] || "PENDING";
+              }
             });
-            if (rows.length > 0) {
-              setEmployees(rows);
-              setSelectedEmployeeIds(rows.map(r => r.id));
-            }
-          }
-        }).catch(() => {});
+          });
+          setEmployees(rows);
+          setSelectedEmployeeIds(rows.map(r => r.id));
+        }).catch(() => {}).finally(() => setLoadingSchedule(false));
       });
     }
 
@@ -258,10 +247,16 @@ export default function TeamSchedulingPage() {
 
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="mb-4">
-            <h2 className="text-lg font-semibold text-slate-900">Week of 2026-05-04</h2>
+            <h2 className="text-lg font-semibold text-slate-900">This Week</h2>
             <p className="text-sm text-slate-500">Showing {displayRows.length} teammates in {activeView.name.toLowerCase()}.</p>
           </div>
-          <WeeklyScheduleGrid rows={displayRows} />
+          {loadingSchedule ? (
+            <p className="py-8 text-center text-sm text-slate-400">Loading schedule…</p>
+          ) : displayRows.length === 0 ? (
+            <p className="py-8 text-center text-sm text-slate-400">No schedule data yet. Team members can set their status on the Update Status page.</p>
+          ) : (
+            <WeeklyScheduleGrid rows={displayRows} />
+          )}
         </section>
       </section>
     </div>

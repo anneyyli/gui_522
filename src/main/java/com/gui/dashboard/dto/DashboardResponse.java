@@ -49,4 +49,8 @@ public class DashboardResponse {
     public List<Map<String, Object>> getWeeklyTrend() { return weeklyTrend; }
     public void setWeeklyTrend(List<Map<String, Object>> weeklyTrend) { this.weeklyTrend = weeklyTrend; }
 
+    private List<Map<String, Object>> floorUtilisation;
+    public List<Map<String, Object>> getFloorUtilisation() { return floorUtilisation; }
+    public void setFloorUtilisation(List<Map<String, Object>> floorUtilisation) { this.floorUtilisation = floorUtilisation; }
+
 }

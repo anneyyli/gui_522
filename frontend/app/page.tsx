@@ -52,6 +52,11 @@ interface DashboardData {
     occupied: number;
     total: number;
   }>;
+  floorUtilisation?: Array<{
+    floor: string;
+    desks: number;
+    occupied: number;
+  }>;
 }
 
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
@@ -250,12 +255,8 @@ export default function HomePage() {
             <h2 className="text-lg font-semibold text-slate-900">Floor Utilisation</h2>
             <p className="text-sm text-slate-500">Occupancy breakdown by floor today</p>
             <div className="mt-4 space-y-3">
-              {[
-                { floor: "Floor 1", desks: 30, occupied: Math.min(30, Math.round(dashboardData.occupiedDesks * 0.4)) },
-                { floor: "Floor 2", desks: 30, occupied: Math.min(30, Math.round(dashboardData.occupiedDesks * 0.35)) },
-                { floor: "Floor 3", desks: 30, occupied: Math.min(30, Math.round(dashboardData.occupiedDesks * 0.25)) },
-              ].map((f) => {
-                const pct = Math.round((f.occupied / f.desks) * 100);
+              {(dashboardData.floorUtilisation ?? []).map((f) => {
+                const pct = f.desks > 0 ? Math.round((f.occupied / f.desks) * 100) : 0;
                 return (
                   <div key={f.floor}>
                     <div className="flex items-center justify-between text-sm">
@@ -277,43 +278,54 @@ export default function HomePage() {
               })}
             </div>
             <p className="mt-4 text-xs text-slate-400">
-              30 desks per floor across Open Plan, Quiet Zone, and Window Row zones.
+              {dashboardData.floorUtilisation?.length ?? 3} floors across Open Plan, Quiet Zone, and Reception zones.
             </p>
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-900">Hybrid Policy Compliance</h2>
-            <p className="text-sm text-slate-500">Minimum 2 office days per week requirement</p>
-            <div className="mt-4 flex items-center gap-6">
-              <div className="relative">
-                <svg width="120" height="120" viewBox="0 0 120 120">
-                  <circle cx="60" cy="60" r="50" fill="none" stroke="#f1f5f9" strokeWidth="10" />
-                  <circle
-                    cx="60" cy="60" r="50" fill="none" stroke="#10b981" strokeWidth="10"
-                    strokeDasharray={`${2 * Math.PI * 50 * 0.78} ${2 * Math.PI * 50 * 0.22}`}
-                    strokeLinecap="round"
-                    transform="rotate(-90 60 60)"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-xl font-bold text-slate-900">78%</span>
+          {(() => {
+            const totalEmployees = dashboardData.teamSchedule.length;
+            const meetingPolicy = dashboardData.teamSchedule.filter(
+              (emp) => emp.days.filter((d) => d === "IN_OFFICE").length >= 2
+            ).length;
+            const belowThreshold = totalEmployees - meetingPolicy;
+            const compliancePct = totalEmployees > 0 ? Math.round((meetingPolicy / totalEmployees) * 100) : 0;
+
+            return (
+              <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 className="text-lg font-semibold text-slate-900">Hybrid Policy Compliance</h2>
+                <p className="text-sm text-slate-500">Minimum 2 office days per week requirement</p>
+                <div className="mt-4 flex items-center gap-6">
+                  <div className="relative">
+                    <svg width="120" height="120" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="50" fill="none" stroke="#f1f5f9" strokeWidth="10" />
+                      <circle
+                        cx="60" cy="60" r="50" fill="none" stroke="#10b981" strokeWidth="10"
+                        strokeDasharray={`${2 * Math.PI * 50 * (compliancePct / 100)} ${2 * Math.PI * 50 * (1 - compliancePct / 100)}`}
+                        strokeLinecap="round"
+                        transform="rotate(-90 60 60)"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-xl font-bold text-slate-900">{compliancePct}%</span>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                      <span className="text-sm text-slate-700">{meetingPolicy} meeting policy</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="h-2.5 w-2.5 rounded-full bg-slate-200" />
+                      <span className="text-sm text-slate-700">{belowThreshold} below threshold</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                  <span className="text-sm text-slate-700">66 meeting policy</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="h-2.5 w-2.5 rounded-full bg-slate-200" />
-                  <span className="text-sm text-slate-700">19 below threshold</span>
-                </div>
-              </div>
-            </div>
-            <p className="mt-4 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
-              Employees with fewer than 2 scheduled office days this week. Consider targeted reminders before escalation.
-            </p>
-          </section>
+                <p className="mt-4 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
+                  Employees with fewer than 2 scheduled office days this week. Consider targeted reminders before escalation.
+                </p>
+              </section>
+            );
+          })()}
         </div>
       )}
 
