@@ -6,11 +6,12 @@ import type { DeskAvailability } from "./types";
 interface Props {
   date: string;
   employeeId: string;
+  refresh?: number;
   onBookingCreated: () => void;
   onAvailabilityChange?: (occupied: number, total: number) => void;
 }
 
-export default function DeskAvailabilityGrid({ date, employeeId, onBookingCreated, onAvailabilityChange }: Props) {
+export default function DeskAvailabilityGrid({ date, employeeId, refresh = 0, onBookingCreated, onAvailabilityChange }: Props) {
   const [desks, setDesks] = useState<DeskAvailability[]>([]);
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState<string | null>(null);
@@ -29,7 +30,7 @@ export default function DeskAvailabilityGrid({ date, employeeId, onBookingCreate
         setError(err?.message ?? "Unable to load desk availability.");
       })
       .finally(() => setLoading(false));
-  }, [date, onAvailabilityChange]);
+  }, [date, refresh, onAvailabilityChange]);
 
   const updateAvailability = (updated: DeskAvailability[]) => {
     setDesks(updated);

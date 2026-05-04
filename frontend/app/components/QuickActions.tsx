@@ -10,16 +10,22 @@ export default function QuickActions() {
 
       <div className="mt-5 grid gap-3">
         <Link
+          href="/team-scheduling"
+          className="rounded-xl bg-teal-600 px-4 py-3 text-center text-sm font-medium text-white transition hover:bg-teal-700"
+        >
+          Plan Team Day
+        </Link>
+        <Link
           href="/desk-booking"
-          className="rounded-xl bg-teal-600 px-4 py-3 text-sm font-medium text-white"
+          className="rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50"
         >
           Book Desks for Team
         </Link>
         <Link
-          href="/team-scheduling"
-          className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700"
+          href="/update-status"
+          className="rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50"
         >
-          View Status
+          Update Status
         </Link>
       </div>
     </section>

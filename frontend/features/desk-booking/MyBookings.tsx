@@ -3,18 +3,32 @@ import { useEffect, useState } from "react";
 import { deskBookingApi } from "./api";
 import type { BookingResponse } from "./types";
 
-interface Props { employeeId: string; refresh: number; }
+interface Props {
+  employeeId: string;
+  refresh: number;
+  onCancelled?: (booking: BookingResponse) => void;
+}
 
-export default function MyBookings({ employeeId, refresh }: Props) {
+export default function MyBookings({ employeeId, refresh, onCancelled }: Props) {
   const [bookings, setBookings] = useState<BookingResponse[]>([]);
+  const [cancelling, setCancelling] = useState<string | null>(null);
 
   useEffect(() => {
     deskBookingApi.getMyBookings(employeeId).then(setBookings);
   }, [employeeId, refresh]);
 
-  const handleCancel = async (id: string) => {
-    await deskBookingApi.cancelBooking(id);
-    setBookings(b => b.filter(x => x.id !== id));
+  const handleCancel = async (booking: BookingResponse) => {
+    setCancelling(booking.id);
+    try {
+      await deskBookingApi.cancelBooking(booking.id);
+      setBookings((current) => current.filter((b) => b.id !== booking.id));
+      onCancelled?.(booking);
+    } catch {
+      const updated = await deskBookingApi.getMyBookings(employeeId);
+      setBookings(updated);
+    } finally {
+      setCancelling(null);
+    }
   };
 
   const active = bookings.filter(b => b.status === "CONFIRMED");
@@ -29,10 +43,11 @@ export default function MyBookings({ employeeId, refresh }: Props) {
             <p className="text-xs text-gray-500">{b.date}</p>
           </div>
           <button
-            onClick={() => handleCancel(b.id)}
-            className="text-xs text-red-500 hover:text-red-700 font-medium transition-colors"
+            onClick={() => handleCancel(b)}
+            disabled={cancelling === b.id}
+            className="text-xs text-red-500 hover:text-red-700 font-medium transition-colors disabled:opacity-50"
           >
-            Cancel
+            {cancelling === b.id ? "Cancelling…" : "Cancel"}
           </button>
         </div>
       ))}

@@ -233,8 +233,9 @@ export default function HomePage() {
                         stroke="white"
                         strokeWidth="2"
                         className="hover:opacity-80 transition-opacity cursor-pointer"
-                        title={`${label}: ${count} people`}
-                      />
+                      >
+                        <title>{`${label}: ${count} people`}</title>
+                      </path>
                     );
                   };
 
