@@ -32,6 +32,12 @@ interface DashboardData {
       schedule: string[];
     }>;
   };
+  hrAttendanceSummary?: {
+    officeCount: number;
+    wfhCount: number;
+    oooCount: number;
+    totalEmployees: number;
+  };
 }
 
 export default function HomePage() {
@@ -116,6 +122,7 @@ export default function HomePage() {
   }
 
   const isManager = user.role === "MANAGER";
+  const isHR = user.role === "HR";
 
   return (
     <div className="space-y-8">
@@ -142,6 +149,41 @@ export default function HomePage() {
         />
         <QuickActions />
       </div>
+
+      {isHR && dashboardData?.hrAttendanceSummary && (
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold text-slate-900">Company Attendance Summary</h2>
+            <p className="text-sm text-slate-500">Overall company attendance statistics.</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">
+                {dashboardData.hrAttendanceSummary.officeCount}
+              </div>
+              <div className="text-sm text-slate-600">In Office</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">
+                {dashboardData.hrAttendanceSummary.wfhCount}
+              </div>
+              <div className="text-sm text-slate-600">Work from Home</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-red-600">
+                {dashboardData.hrAttendanceSummary.oooCount}
+              </div>
+              <div className="text-sm text-slate-600">Out of Office</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-slate-600">
+                {dashboardData.hrAttendanceSummary.totalEmployees}
+              </div>
+              <div className="text-sm text-slate-600">Total Employees</div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {isManager && dashboardData.teamAttendanceCharts && (
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">

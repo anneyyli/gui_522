@@ -13,6 +13,7 @@ public class DashboardResponse {
     private List<WeeklyScheduleRowResponse> teamSchedule;
     private Map<String, Object> teamAttendanceCharts;
     private Map<String, Object> directReportsGantt;
+    private Map<String, Object> hrAttendanceSummary;
 
     public int getOccupiedDesks() { return occupiedDesks; }
     public void setOccupiedDesks(int occupiedDesks) { this.occupiedDesks = occupiedDesks; }
@@ -40,5 +41,8 @@ public class DashboardResponse {
 
     public Map<String, Object> getDirectReportsGantt() { return directReportsGantt; }
     public void setDirectReportsGantt(Map<String, Object> directReportsGantt) { this.directReportsGantt = directReportsGantt; }
+
+    public Map<String, Object> getHrAttendanceSummary() { return hrAttendanceSummary; }
+    public void setHrAttendanceSummary(Map<String, Object> hrAttendanceSummary) { this.hrAttendanceSummary = hrAttendanceSummary; }
 
 }

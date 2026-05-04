@@ -1,6 +1,5 @@
 [
   {
-    "id": "U001",
     "employeeId": "E001",
     "email": "alice@company.com",
     "password": "password123",
@@ -9,7 +8,6 @@
     "reportsTo": null
   },
   {
-    "id": "U002",
     "employeeId": "E002",
     "email": "bob@company.com",
     "password": "password123",
@@ -18,7 +16,6 @@
     "reportsTo": null
   },
   {
-    "id": "U003",
     "employeeId": "E003",
     "email": "charlie@company.com",
     "password": "password123",
@@ -27,7 +24,6 @@
     "reportsTo": "E001"
   },
   {
-    "id": "U004",
     "employeeId": "E004",
     "email": "diana@company.com",
     "password": "password123",
@@ -36,12 +32,19 @@
     "reportsTo": "E001"
   },
   {
-    "id": "U005",
     "employeeId": "E005",
     "email": "eve@company.com",
     "password": "password123",
     "name": "Eve Adams",
     "role": "TEAM_MEMBER",
+    "reportsTo": null
+  },
+  {
+    "employeeId": "E006",
+    "email": "frank@company.com",
+    "password": "password123",
+    "name": "Frank Miller",
+    "role": "HR",
     "reportsTo": null
   }
 ]
