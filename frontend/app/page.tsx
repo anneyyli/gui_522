@@ -132,7 +132,15 @@ export default function HomePage() {
   }
 
   if (!dashboardData || !user) {
-    return <div className="flex items-center justify-center py-20 text-sm text-slate-500">Failed to load dashboard</div>;
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-3">
+        <p className="text-sm text-slate-600 font-medium">Unable to load dashboard</p>
+        <p className="text-xs text-slate-400 max-w-sm text-center">This may be due to a temporary server issue. Try refreshing the page, or check your network connection.</p>
+        <button type="button" onClick={() => window.location.reload()} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+          Refresh page
+        </button>
+      </div>
+    );
   }
 
   const isManager = user.role === "MANAGER";
@@ -154,7 +162,12 @@ export default function HomePage() {
             {roleHeading.subtitle}
           </p>
         </div>
-        <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm">
+        <button
+          type="button"
+          onClick={() => router.push("/desk-booking")}
+          title="View floor plan and book a desk"
+          className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition hover:border-teal-300 hover:bg-teal-50 cursor-pointer"
+        >
           <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
@@ -162,7 +175,10 @@ export default function HomePage() {
           <span className="font-medium text-slate-700">{dashboardData.site}</span>
           <span className="text-slate-300">|</span>
           <span className="text-slate-500">{dashboardData.floor}</span>
-        </div>
+          <svg className="h-3 w-3 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
@@ -184,7 +200,10 @@ export default function HomePage() {
             <div>
               <h3 className="text-sm font-semibold text-amber-800">Capacity Alert</h3>
               <p className="mt-0.5 text-sm text-amber-700">
-                Office occupancy is at {Math.round((dashboardData.occupiedDesks / dashboardData.totalDesks) * 100)}% ({dashboardData.occupiedDesks}/{dashboardData.totalDesks} desks) — this exceeds the 80% capacity threshold. Consider adjusting team schedules or opening additional floors.
+                Office occupancy is at <strong>{Math.round((dashboardData.occupiedDesks / dashboardData.totalDesks) * 100)}%</strong> ({dashboardData.occupiedDesks}/{dashboardData.totalDesks} desks). This exceeds the <strong>80% capacity threshold</strong> set in workplace policy. Consider adjusting team schedules or opening additional floors.
+              </p>
+              <p className="mt-1 text-xs text-amber-600">
+                Threshold: 80% · Current: {Math.round((dashboardData.occupiedDesks / dashboardData.totalDesks) * 100)}% · Over by {dashboardData.occupiedDesks - Math.floor(dashboardData.totalDesks * 0.8)} desks
               </p>
             </div>
           </div>

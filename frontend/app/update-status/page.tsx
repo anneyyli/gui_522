@@ -81,7 +81,7 @@ export default function UpdateStatusPage() {
       setTimeout(() => { setSaved(null); setConfirmationMessage(null); }, 4000);
     } catch {
       setConfirmationMessage(null);
-      setError("Failed to update status. Please try again.");
+      setError("Unable to save your status — the server may be temporarily unavailable. Check your connection and try again, or contact your workspace administrator if the problem persists.");
     } finally {
       setSaving(null);
     }

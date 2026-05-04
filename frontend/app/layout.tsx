@@ -20,9 +20,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to main content
         </a>
         <Sidebar />
-        <div className="pl-56">
+        <div className="pl-0 md:pl-56">
           <Navbar />
-          <main id="main-content" className="max-w-6xl mx-auto px-6 py-8">{children}</main>
+          <main id="main-content" className="max-w-6xl mx-auto px-4 py-6 md:px-6 md:py-8">{children}</main>
         </div>
         <HelpPanel />
       </body>

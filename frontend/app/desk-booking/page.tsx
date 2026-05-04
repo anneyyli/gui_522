@@ -117,7 +117,7 @@ function DeskBookingContent() {
       setSelectedDeskId(null);
       setRefresh((c) => c + 1);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Unable to create booking.");
+      setError(err instanceof Error ? err.message : "Unable to create booking. The desk may have just been taken — try selecting a different desk or refresh the floor plan.");
       setTimeout(() => setError(null), 5000);
     } finally {
       setBooking(false);
@@ -283,6 +283,7 @@ function DeskBookingContent() {
                     isBooking={booking}
                     onConfirm={handleConfirmBooking}
                     onDeselect={() => setSelectedDeskId(null)}
+                    occupancyPercent={percent}
                   />
                 ) : (
                   <aside className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-center">

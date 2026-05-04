@@ -118,7 +118,7 @@ export default function FloorPlan({
                           ? "border-slate-300 bg-white hover:border-teal-400 hover:bg-teal-50 cursor-pointer"
                           : hasTeam
                           ? "border-blue-200 bg-blue-50 cursor-not-allowed"
-                          : "border-slate-200 bg-slate-200 cursor-not-allowed"
+                          : "border-orange-200 bg-orange-50 cursor-not-allowed"
                       }`}
                     >
                       <span className="text-[10px] font-semibold leading-none text-slate-700">{desk.deskLabel}</span>
@@ -149,13 +149,13 @@ export default function FloorPlan({
             <span className="h-1.5 w-1.5 rounded-full bg-purple-400" /> Standing
           </div>
           <div className="flex items-center gap-1 text-[10px] text-slate-400">
-            <span className="h-2 w-2 rounded-sm bg-white border border-slate-300" /> Free
+            <span className="h-2 w-2 rounded-sm bg-white border border-slate-300" /> Available
           </div>
           <div className="flex items-center gap-1 text-[10px] text-slate-400">
-            <span className="h-2 w-2 rounded-sm bg-blue-50 border border-blue-200" /> Team
+            <span className="h-2 w-2 rounded-sm bg-blue-50 border border-blue-200" /> Your Team
           </div>
           <div className="flex items-center gap-1 text-[10px] text-slate-400">
-            <span className="h-2 w-2 rounded-sm bg-slate-200 border border-slate-200" /> Booked
+            <span className="h-2 w-2 rounded-sm bg-orange-50 border border-orange-200" /> Occupied
           </div>
         </div>
       </div>

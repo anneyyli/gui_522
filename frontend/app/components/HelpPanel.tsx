@@ -13,15 +13,35 @@ const helpTopics = [
 
 export default function HelpPanel() {
   const [open, setOpen] = useState(false);
+  const [showHint, setShowHint] = useState(false);
+
+  useState(() => {
+    if (typeof window !== "undefined") {
+      const dismissed = localStorage.getItem("helpHintDismissed");
+      if (!dismissed) setShowHint(true);
+    }
+  });
+
+  const handleOpen = () => {
+    setOpen(true);
+    setShowHint(false);
+    if (typeof window !== "undefined") localStorage.setItem("helpHintDismissed", "1");
+  };
 
   return (
     <>
+      {showHint && (
+        <div className="fixed bottom-[4.5rem] right-5 z-40 rounded-lg border border-teal-200 bg-white px-3 py-2 text-xs text-slate-700 shadow-lg animate-bounce">
+          <span className="font-medium text-teal-700">New here?</span> Tap for a quick guide
+          <div className="absolute -bottom-1.5 right-5 h-3 w-3 rotate-45 border-b border-r border-teal-200 bg-white" />
+        </div>
+      )}
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={handleOpen}
         aria-label="Help"
         title="Help & FAQ"
-        className="fixed bottom-5 right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-teal-600 text-white shadow-lg transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+        className={`fixed bottom-5 right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-teal-600 text-white shadow-lg transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 ${showHint ? "ring-4 ring-teal-200" : ""}`}
       >
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
