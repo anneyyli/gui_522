@@ -61,5 +61,275 @@
     "role": "HR",
     "team": "HR",
     "reportsTo": null
+  },
+  {
+    "employeeId": "EXT001",
+    "email": "j.wilson@company.com",
+    "password": "password123",
+    "name": "James Wilson",
+    "role": "TEAM_MEMBER",
+    "team": "Engineering",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT002",
+    "email": "s.mitchell@company.com",
+    "password": "password123",
+    "name": "Sarah Mitchell",
+    "role": "TEAM_MEMBER",
+    "team": "Design",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT003",
+    "email": "m.thompson@company.com",
+    "password": "password123",
+    "name": "Marcus Thompson",
+    "role": "TEAM_MEMBER",
+    "team": "Engineering",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT004",
+    "email": "l.garcia@company.com",
+    "password": "password123",
+    "name": "Laura Garcia",
+    "role": "TEAM_MEMBER",
+    "team": "Product",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT005",
+    "email": "k.obrien@company.com",
+    "password": "password123",
+    "name": "Kevin O'Brien",
+    "role": "TEAM_MEMBER",
+    "team": "Engineering",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT006",
+    "email": "p.patel@company.com",
+    "password": "password123",
+    "name": "Priya Patel",
+    "role": "TEAM_MEMBER",
+    "team": "Data",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT007",
+    "email": "t.harrison@company.com",
+    "password": "password123",
+    "name": "Tom Harrison",
+    "role": "TEAM_MEMBER",
+    "team": "Engineering",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT008",
+    "email": "n.kowalski@company.com",
+    "password": "password123",
+    "name": "Nina Kowalski",
+    "role": "TEAM_MEMBER",
+    "team": "Design",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT009",
+    "email": "d.lee@company.com",
+    "password": "password123",
+    "name": "David Lee",
+    "role": "TEAM_MEMBER",
+    "team": "Engineering",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT010",
+    "email": "r.foster@company.com",
+    "password": "password123",
+    "name": "Rachel Foster",
+    "role": "TEAM_MEMBER",
+    "team": "Product",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT011",
+    "email": "s.wright@company.com",
+    "password": "password123",
+    "name": "Simon Wright",
+    "role": "TEAM_MEMBER",
+    "team": "Finance",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT012",
+    "email": "h.clarke@company.com",
+    "password": "password123",
+    "name": "Hannah Clarke",
+    "role": "TEAM_MEMBER",
+    "team": "Engineering",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT013",
+    "email": "r.murphy@company.com",
+    "password": "password123",
+    "name": "Ryan Murphy",
+    "role": "TEAM_MEMBER",
+    "team": "Engineering",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT014",
+    "email": "o.bennett@company.com",
+    "password": "password123",
+    "name": "Olivia Bennett",
+    "role": "TEAM_MEMBER",
+    "team": "Marketing",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT015",
+    "email": "n.cross@company.com",
+    "password": "password123",
+    "name": "Nathan Cross",
+    "role": "TEAM_MEMBER",
+    "team": "Engineering",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT016",
+    "email": "m.taylor@company.com",
+    "password": "password123",
+    "name": "Megan Taylor",
+    "role": "TEAM_MEMBER",
+    "team": "Design",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT017",
+    "email": "a.hassan@company.com",
+    "password": "password123",
+    "name": "Amir Hassan",
+    "role": "TEAM_MEMBER",
+    "team": "Engineering",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT018",
+    "email": "k.brooks@company.com",
+    "password": "password123",
+    "name": "Katie Brooks",
+    "role": "HR",
+    "team": "HR",
+    "reportsTo": null
+  },
+  {
+    "employeeId": "EXT019",
+    "email": "d.shaw@company.com",
+    "password": "password123",
+    "name": "Daniel Shaw",
+    "role": "TEAM_MEMBER",
+    "team": "Engineering",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT020",
+    "email": "z.campbell@company.com",
+    "password": "password123",
+    "name": "Zoe Campbell",
+    "role": "TEAM_MEMBER",
+    "team": "Product",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT021",
+    "email": "l.robinson@company.com",
+    "password": "password123",
+    "name": "Luke Robinson",
+    "role": "TEAM_MEMBER",
+    "team": "Engineering",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT022",
+    "email": "f.stewart@company.com",
+    "password": "password123",
+    "name": "Fiona Stewart",
+    "role": "TEAM_MEMBER",
+    "team": "Finance",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT023",
+    "email": "j.morris@company.com",
+    "password": "password123",
+    "name": "Jake Morris",
+    "role": "TEAM_MEMBER",
+    "team": "Engineering",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT024",
+    "email": "a.okafor@company.com",
+    "password": "password123",
+    "name": "Amara Okafor",
+    "role": "TEAM_MEMBER",
+    "team": "Data",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT025",
+    "email": "c.palmer@company.com",
+    "password": "password123",
+    "name": "Chris Palmer",
+    "role": "TEAM_MEMBER",
+    "team": "Engineering",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT026",
+    "email": "s.turner@company.com",
+    "password": "password123",
+    "name": "Sophie Turner",
+    "role": "TEAM_MEMBER",
+    "team": "Marketing",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT027",
+    "email": "w.chen@company.com",
+    "password": "password123",
+    "name": "William Chen",
+    "role": "TEAM_MEMBER",
+    "team": "Engineering",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT028",
+    "email": "r.hall@company.com",
+    "password": "password123",
+    "name": "Rebecca Hall",
+    "role": "TEAM_MEMBER",
+    "team": "Product",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT029",
+    "email": "p.dunn@company.com",
+    "password": "password123",
+    "name": "Patrick Dunn",
+    "role": "TEAM_MEMBER",
+    "team": "Engineering",
+    "reportsTo": "E001"
+  },
+  {
+    "employeeId": "EXT030",
+    "email": "i.murray@company.com",
+    "password": "password123",
+    "name": "Isla Murray",
+    "role": "TEAM_MEMBER",
+    "team": "Design",
+    "reportsTo": "E001"
   }
 ]

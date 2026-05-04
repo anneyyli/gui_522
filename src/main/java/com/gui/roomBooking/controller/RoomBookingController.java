@@ -15,12 +15,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * REST controller for meeting room bookings. Rooms use hourly time slots
- * (09:00-17:00) rather than full-day reservations, reflecting stakeholder
- * feedback that meetings are typically 1-2 hours and rooms should be shared.
- * Availability is returned per-room with booked slots greyed out in the UI.
- */
 @RestController
 @RequestMapping("/api/room-booking")
 public class RoomBookingController {

@@ -18,14 +18,6 @@ import com.gui.teamScheduling.domain.TeamSchedule;
 import com.gui.teamScheduling.repository.TeamScheduleRepository;
 import org.springframework.stereotype.Service;
 
-/**
- * Builds role-specific dashboard views following the privacy-by-design principle:
- * - Managers see their direct reports' attendance and team desk usage
- * - Team members see only team-level schedule and their own bookings
- * - HR sees anonymised, organisation-wide occupancy data and capacity alerts
- * This separation was introduced after stakeholder feedback that an all-in-one
- * dashboard felt cluttered and exposed unnecessary personal data.
- */
 @Service
 public class DashboardService {
 

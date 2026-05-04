@@ -1,9 +1,3 @@
-/**
- * Team scheduling page — shows weekly attendance grid for colleagues.
- * Supports custom saved views (up to 5) so users can quickly filter to
- * specific subsets of colleagues they commonly coordinate with.
- * Schedule data is fetched from the backend TeamScheduleService.
- */
 "use client";
 
 import { useEffect, useMemo, useState } from "react";

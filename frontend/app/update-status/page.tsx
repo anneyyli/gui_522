@@ -1,10 +1,3 @@
-/**
- * Personal status page where employees declare their working location for each
- * weekday (Office, Remote, or Out of Office). This data feeds the manager's
- * Direct Reports Gantt chart and the Team Attendance pie chart on the dashboard.
- * The assumption (Section 1.6 of design) is that employees regularly update
- * their status so the planner remains useful for team coordination.
- */
 "use client";
 
 import { useEffect, useState } from "react";

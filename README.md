@@ -1,182 +1,100 @@
 # Hybrid Work Application
 
-A full-stack application for managing desk bookings, team scheduling, and company dashboards with role-based access control.
+A full-stack application for managing desk bookings, meeting room reservations, team scheduling, and company dashboards with role-based access control.
 
-## 🏗️ Architecture
+## Architecture
 
-- **Backend**: Spring Boot 4.0.2 (Java 23) - REST API with Spring Security
-- **Frontend**: Next.js with TypeScript - Server-side rendering with client components
-- **Data**: JSON file-based persistence (users, bookings, calendar events)
+- **Backend**: Spring Boot 4.0.2 (Java 23) — REST API with Spring Security session auth
+- **Frontend**: Next.js with TypeScript and Tailwind CSS
+- **Data**: JSON file-based persistence (users, bookings, calendar events, desks, employees)
 
-## 📋 Prerequisites
+## Prerequisites
 
-- **Java 23** - For running the Spring Boot backend
-- **Node.js 18+** - For running the Next.js frontend
-- **Maven** - For building the backend
-- **npm** - For managing frontend dependencies
+- **Java 23** — for running the Spring Boot backend
+- **Node.js 18+** — for running the Next.js frontend
+- **Maven 3.9+** — for building the backend (or use the pre-built JAR)
+- **npm** — for managing frontend dependencies
 
-## 🚀 Quick Start
+## Quick Start
 
-### Backend Setup
+### Backend
 
-#### Option 1: Using Maven (Recommended for Development)
-
-1. Navigate to the project root:
-```bash
-cd \gui_522
-```
-
-2. Build the project:
+1. From the project root, build and run:
 ```bash
 mvn clean package
-```
-
-3. Run the Spring Boot application:
-```bash
 mvn spring-boot:run
 ```
 
-The backend will start on `http://localhost:8080`
+The backend starts on `http://localhost:8080`.
 
-#### Option 2: Using Pre-built JAR (No Maven Required)
-
-If the application has already been built, you can run it with just Java:
-
-1. Navigate to the project root:
-```bash
-cd \gui_522
-```
-
-2. Run the JAR file directly:
+Alternatively, run the JAR directly (no Maven needed after initial build):
 ```bash
 java -jar target/gui_522-1.0-SNAPSHOT.jar
 ```
 
-The backend will start on `http://localhost:8080`
-
-#### Option 3: Build Once, Run Without Maven
-
-1. Build the project once with Maven:
-```bash
-mvn clean package
-```
-
-2. After that, you can run the JAR without Maven:
-```bash
-java -jar target/gui_522-1.0-SNAPSHOT.jar
-```
-
-No Maven needed for subsequent runs!
-
-### Frontend Setup
+### Frontend
 
 1. Navigate to the frontend directory:
 ```bash
-cd \gui_522\frontend
+cd frontend
 ```
 
-2. Install dependencies:
+2. Install dependencies and start the dev server:
 ```bash
 npm install
-```
-
-3. Start the development server:
-```bash
 npm run dev
 ```
 
-The frontend will be available at `http://localhost:3000`
+The frontend will be available at `http://localhost:3000`.
 
-## 👤 Test Users
+## Test Users
 
-All test users have password: `password123`
+All users have password: `password123`
 
-### Engineering Team
-- **Alice Johnson** - Manager
-  - Username: E001
-  - Manages: Charlie Brown, Diana Prince
+| Employee ID | Name          | Role         | Team        |
+|-------------|---------------|--------------|-------------|
+| E001        | Alice Johnson | Manager      | Engineering |
+| E002        | Bob Smith     | Team Member  | Design      |
+| E003        | Charlie Brown | Team Member  | Engineering |
+| E004        | Diana Prince  | Team Member  | Product     |
+| E005        | Eve Adams     | Team Member  | Engineering |
+| E006        | Frank Miller  | HR           | HR          |
+| E007        | Grace Chen    | HR           | HR          |
 
-- **Bob Smith** - Team Member
-  - Username: E002
+## Features
 
-### HR Team
-- **Frank Miller** - HR
-  - Username: E006
-
-## 🎯 Key Features
-
-### Dashboard
-- **Manager Dashboard**: 
-  - Team attendance charts (pie chart)
-  - Direct reports Gantt schedule
-  - Team weekly schedule
-
-- **HR Dashboard**:
-  - Company-wide attendance summary
-  - HR team weekly schedule (no individual employee data)
-
-- **Team Member Dashboard**:
-  - Personal occupancy summary
-  - Team weekly schedule
+### Dashboard (role-based)
+- **Manager**: Team attendance pie chart, direct reports Gantt schedule, team weekly view
+- **Team Member**: Personal occupancy summary, team weekly schedule
+- **HR**: Company-wide attendance summary, capacity alerts
 
 ### Desk Booking
-- Browse available desks with floor plans
-- Book desks by date
-- View personal bookings
-- Managers can book multiple desks
-- Team members limited to 1 desk per day
+- Interactive floor plan with zone-based layout across 3 floors
+- Real-time availability with occupant initials shown
+- Managers can book multiple desks; team members limited to 1 per day
+- Meeting room booking with hourly time slots (09:00–17:00)
 
 ### Team Scheduling
-- Weekly calendar view based on external calendar system
-- Color-coded status (In Office, Remote, Out of Office, Pending)
-- Team-based filtering - see colleagues on your team
+- Weekly calendar grid showing colleagues' work modes
+- Update personal status (Office / Remote / Out of Office)
+- Plan Team Day tool for managers to find optimal in-office days
 
-## 🔐 Data Files
+## Data Files
 
-### users.json
-Stores user information including:
-- Employee ID & credentials
-- Name, email, password
-- Role (MANAGER, TEAM_MEMBER, HR)
-- Team assignment
-- Reporting hierarchy (reportsTo)
+| File | Purpose |
+|------|---------|
+| `users.json` | User credentials, roles, team assignments, reporting hierarchy |
+| `employees.json` | Employee directory (names, departments, job titles) |
+| `bookings.json` | Desk reservations (desk ID, date, status) |
+| `desks.json` | Office desk layout (floor, zone, equipment) |
+| `calendar-events.json` | Weekly schedule events per employee |
 
-### bookings.json
-Stores desk reservations:
-- Booking ID, employee ID, desk ID
-- Booking date and status
-- Confirmation timestamps
+## Troubleshooting
 
-### calendar-events.json
-External calendar system integration:
-- Daily schedule events for all employees
-- Status (IN_OFFICE, REMOTE, OUT_OF_OFFICE)
-- Event descriptions and types
+**Backend won't start** — Check Java 23 is installed (`java -version`) and port 8080 is free.
 
-## 📝 Notes
+**Frontend shows blank page** — Ensure the backend is running, then check browser console. Try `npm cache clean --force` if dependencies seem stale.
 
-- The application uses JSON files for data persistence - not suitable for production
-- Calendar events are for the week starting May 5, 2026 (Monday-Friday)
-- All timestamps are in UTC
-- CORS is configured to allow frontend requests from localhost:3000
+**Login fails** — Credentials are in `users.json`. Ensure session cookies are enabled in your browser.
 
-## 🐛 Troubleshooting
-
-### Backend won't start
-- Ensure Java 23 is installed: `java -version`
-- Check port 8080 is available
-- Run `mvn clean` before rebuilding
-
-### Frontend shows blank page
-- Check browser console for errors
-- Ensure backend is running on port 8080
-- Clear cache: `npm cache clean --force`
-
-### Login fails
-- Verify credentials match users.json
-- Check backend logs for authentication errors
-- Ensure session cookies are enabled
-
-### No calendar data showing
-- Verify calendar-events.json exists and is valid JSON
-- Check that current date is within event date range
+**No schedule data showing** — Check `calendar-events.json` exists and dates are within the current week range.

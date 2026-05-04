@@ -1,10 +1,3 @@
-/**
- * Plan Team Day — helps managers find the optimal day for the whole team to
- * be in the office together. In a post-COVID hybrid environment, coordinating
- * in-person days is critical for collaboration while respecting flexibility.
- * The page analyses existing schedules across the week and recommends the day
- * with the highest existing office attendance, reducing coordination overhead.
- */
 "use client";
 
 import { useEffect, useState } from "react";

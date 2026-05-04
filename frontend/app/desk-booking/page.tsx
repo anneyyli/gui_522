@@ -1,10 +1,3 @@
-/**
- * Unified space booking page with tabbed navigation (Desks / Meeting Rooms).
- * The tab state persists in the URL so refreshing or sharing the link preserves
- * context. Optimistic UI updates are used for cancellation to keep the interface
- * responsive: the booking disappears immediately and the floor plan tile reverts
- * to "available" without waiting for a full re-fetch from the server.
- */
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";

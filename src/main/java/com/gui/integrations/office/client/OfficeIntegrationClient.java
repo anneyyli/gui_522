@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.List;
 
 @Component
@@ -12,106 +13,9 @@ public class OfficeIntegrationClient {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    private static final String HARDCODED_JSON = """
-        [
-          {"id":"D101","label":"1A","floor":"1","zone":"Open Plan","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D102","label":"1B","floor":"1","zone":"Open Plan","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D103","label":"1C","floor":"1","zone":"Open Plan","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D104","label":"1D","floor":"1","zone":"Open Plan","hasMonitor":false,"hasStandingOption":false},
-          {"id":"D105","label":"1E","floor":"1","zone":"Open Plan","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D106","label":"1F","floor":"1","zone":"Open Plan","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D107","label":"1G","floor":"1","zone":"Open Plan","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D108","label":"1H","floor":"1","zone":"Open Plan","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D109","label":"1J","floor":"1","zone":"Open Plan","hasMonitor":false,"hasStandingOption":false},
-          {"id":"D110","label":"1K","floor":"1","zone":"Open Plan","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D111","label":"1L","floor":"1","zone":"Open Plan","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D112","label":"1M","floor":"1","zone":"Open Plan","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D113","label":"1N","floor":"1","zone":"Quiet Zone","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D114","label":"1P","floor":"1","zone":"Quiet Zone","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D115","label":"1Q","floor":"1","zone":"Quiet Zone","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D116","label":"1R","floor":"1","zone":"Quiet Zone","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D117","label":"1S","floor":"1","zone":"Quiet Zone","hasMonitor":false,"hasStandingOption":false},
-          {"id":"D118","label":"1T","floor":"1","zone":"Quiet Zone","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D119","label":"1U","floor":"1","zone":"Quiet Zone","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D120","label":"1V","floor":"1","zone":"Quiet Zone","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D121","label":"1W","floor":"1","zone":"Reception","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D122","label":"1X","floor":"1","zone":"Reception","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D123","label":"1Y","floor":"1","zone":"Reception","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D124","label":"1Z","floor":"1","zone":"Reception","hasMonitor":false,"hasStandingOption":false},
-          {"id":"D125","label":"1AA","floor":"1","zone":"Window Row","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D126","label":"1AB","floor":"1","zone":"Window Row","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D127","label":"1AC","floor":"1","zone":"Window Row","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D128","label":"1AD","floor":"1","zone":"Window Row","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D129","label":"1AE","floor":"1","zone":"Window Row","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D130","label":"1AF","floor":"1","zone":"Window Row","hasMonitor":true,"hasStandingOption":false},
-
-          {"id":"D201","label":"2A","floor":"2","zone":"Open Plan","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D202","label":"2B","floor":"2","zone":"Open Plan","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D203","label":"2C","floor":"2","zone":"Open Plan","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D204","label":"2D","floor":"2","zone":"Open Plan","hasMonitor":false,"hasStandingOption":false},
-          {"id":"D205","label":"2E","floor":"2","zone":"Open Plan","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D206","label":"2F","floor":"2","zone":"Open Plan","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D207","label":"2G","floor":"2","zone":"Open Plan","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D208","label":"2H","floor":"2","zone":"Open Plan","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D209","label":"2J","floor":"2","zone":"Open Plan","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D210","label":"2K","floor":"2","zone":"Open Plan","hasMonitor":false,"hasStandingOption":false},
-          {"id":"D211","label":"2L","floor":"2","zone":"Collaboration","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D212","label":"2M","floor":"2","zone":"Collaboration","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D213","label":"2N","floor":"2","zone":"Collaboration","hasMonitor":false,"hasStandingOption":false},
-          {"id":"D214","label":"2P","floor":"2","zone":"Collaboration","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D215","label":"2Q","floor":"2","zone":"Collaboration","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D216","label":"2R","floor":"2","zone":"Collaboration","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D217","label":"2S","floor":"2","zone":"Collaboration","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D218","label":"2T","floor":"2","zone":"Collaboration","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D219","label":"2U","floor":"2","zone":"Window Row","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D220","label":"2V","floor":"2","zone":"Window Row","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D221","label":"2W","floor":"2","zone":"Window Row","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D222","label":"2X","floor":"2","zone":"Window Row","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D223","label":"2Y","floor":"2","zone":"Window Row","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D224","label":"2Z","floor":"2","zone":"Window Row","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D225","label":"2AA","floor":"2","zone":"Quiet Zone","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D226","label":"2AB","floor":"2","zone":"Quiet Zone","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D227","label":"2AC","floor":"2","zone":"Quiet Zone","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D228","label":"2AD","floor":"2","zone":"Quiet Zone","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D229","label":"2AE","floor":"2","zone":"Quiet Zone","hasMonitor":false,"hasStandingOption":false},
-          {"id":"D230","label":"2AF","floor":"2","zone":"Quiet Zone","hasMonitor":true,"hasStandingOption":false},
-
-          {"id":"D301","label":"3A","floor":"3","zone":"Engineering","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D302","label":"3B","floor":"3","zone":"Engineering","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D303","label":"3C","floor":"3","zone":"Engineering","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D304","label":"3D","floor":"3","zone":"Engineering","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D305","label":"3E","floor":"3","zone":"Engineering","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D306","label":"3F","floor":"3","zone":"Engineering","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D307","label":"3G","floor":"3","zone":"Engineering","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D308","label":"3H","floor":"3","zone":"Engineering","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D309","label":"3J","floor":"3","zone":"Engineering","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D310","label":"3K","floor":"3","zone":"Engineering","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D311","label":"3L","floor":"3","zone":"Engineering","hasMonitor":false,"hasStandingOption":false},
-          {"id":"D312","label":"3M","floor":"3","zone":"Engineering","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D313","label":"3N","floor":"3","zone":"Design","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D314","label":"3P","floor":"3","zone":"Design","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D315","label":"3Q","floor":"3","zone":"Design","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D316","label":"3R","floor":"3","zone":"Design","hasMonitor":false,"hasStandingOption":true},
-          {"id":"D317","label":"3S","floor":"3","zone":"Design","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D318","label":"3T","floor":"3","zone":"Design","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D319","label":"3U","floor":"3","zone":"Design","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D320","label":"3V","floor":"3","zone":"Design","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D321","label":"3W","floor":"3","zone":"Standing Hub","hasMonitor":false,"hasStandingOption":true},
-          {"id":"D322","label":"3X","floor":"3","zone":"Standing Hub","hasMonitor":false,"hasStandingOption":true},
-          {"id":"D323","label":"3Y","floor":"3","zone":"Standing Hub","hasMonitor":false,"hasStandingOption":true},
-          {"id":"D324","label":"3Z","floor":"3","zone":"Standing Hub","hasMonitor":false,"hasStandingOption":true},
-          {"id":"D325","label":"3AA","floor":"3","zone":"Standing Hub","hasMonitor":false,"hasStandingOption":true},
-          {"id":"D326","label":"3AB","floor":"3","zone":"Standing Hub","hasMonitor":false,"hasStandingOption":true},
-          {"id":"D327","label":"3AC","floor":"3","zone":"Window Row","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D328","label":"3AD","floor":"3","zone":"Window Row","hasMonitor":true,"hasStandingOption":true},
-          {"id":"D329","label":"3AE","floor":"3","zone":"Window Row","hasMonitor":true,"hasStandingOption":false},
-          {"id":"D330","label":"3AF","floor":"3","zone":"Window Row","hasMonitor":true,"hasStandingOption":false}
-        ]
-        """;
-
     public List<DeskDto> getAllDesks() {
         try {
-            return mapper.readValue(HARDCODED_JSON, new TypeReference<>() {});
+            return mapper.readValue(new File("desks.json"), new TypeReference<>() {});
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse office data", e);
         }

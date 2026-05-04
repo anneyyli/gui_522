@@ -14,12 +14,6 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Manages employee work-mode schedules (OFFICE, REMOTE, LEAVE) for each weekday.
- * This data feeds both the "Update Status" page (personal) and the manager's
- * Direct Reports Gantt chart. Schedules are per-day and per-employee, allowing
- * flexible hybrid patterns that the design spec identified as a core requirement.
- */
 @Service
 public class TeamScheduleService {
 

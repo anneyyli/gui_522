@@ -1,11 +1,3 @@
-/**
- * Visual floor plan component that provides spatial context for desk selection.
- * Design rationale: users indicated they wanted to see WHERE a desk is physically
- * located (near window, quiet zone, etc.) rather than picking from a flat list.
- * Desks are grouped by zone and colour-coded: white=available, blue=team member
- * booked (with initials visible), grey=occupied by others. A "+" icon marks free
- * desks to support accessibility beyond colour alone (Section 1.4 of design spec).
- */
 import { useMemo } from "react";
 import type { DeskAvailability } from "@/features/desk-booking/types";
 

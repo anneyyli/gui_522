@@ -1,10 +1,3 @@
-/**
- * Role-based dashboard — the primary landing page after login.
- * Displays different data depending on whether the user is a Manager, Team Member,
- * or HR, following the principle of showing only information relevant to each
- * stakeholder's responsibilities (reduces cognitive load and protects privacy).
- * Occupancy data is fetched from real booking/room state, not hardcoded.
- */
 "use client";
 
 import { useEffect, useState } from "react";

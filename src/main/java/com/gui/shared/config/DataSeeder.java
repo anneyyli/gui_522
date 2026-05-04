@@ -15,12 +15,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
 
-/**
- * Seeds realistic occupancy data on startup so the dashboard, floor plan, and
- * team scheduling pages show a believable hybrid-office scenario rather than
- * empty state. Simulates a typical mid-week pattern where Tuesday-Thursday are
- * peak office days (matching real-world hybrid workplace research).
- */
 @Component
 public class DataSeeder implements CommandLineRunner {
 
