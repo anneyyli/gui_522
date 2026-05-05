@@ -29,7 +29,7 @@ The backend starts on `http://localhost:8080`.
 
 Alternatively, run the JAR directly (no Maven needed after initial build):
 ```bash
-java -jar target/gui_522-1.0-SNAPSHOT.jar
+java -jar gui_522-1.0-SNAPSHOT.jar
 ```
 
 ### Frontend
