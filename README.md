@@ -28,6 +28,7 @@ mvn spring-boot:run
 The backend starts on `http://localhost:8080`.
 
 Alternatively, run the JAR directly (no Maven needed after initial build):
+NOTE: you may need to cd into the gui_522-master if you are unzipping.
 ```bash
 java -jar gui_522-1.0-SNAPSHOT.jar
 ```
